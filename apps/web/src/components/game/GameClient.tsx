@@ -3,19 +3,20 @@
 import type { Room } from "colyseus.js";
 import type { SessionPlayerSnapshot, WiaiSnapshot } from "@/game-client/types";
 import { GameLayout } from "./GameLayout";
+import { AppShell, AppShellContainer } from "@/components/layout/AppShell";
 
-export function GameClient({
-  room,
-  snapshot,
-  currentSessionPlayer
-}: {
+interface GameClientProps {
   room: Room;
   snapshot: WiaiSnapshot;
   currentSessionPlayer: SessionPlayerSnapshot | undefined;
-}) {
+}
+
+export function GameClient({ room, snapshot, currentSessionPlayer }: GameClientProps) {
   return (
-    <main className="app-shell game-shell">
-      <GameLayout room={room} snapshot={snapshot} currentSessionPlayer={currentSessionPlayer} />
-    </main>
+    <AppShell variant="game">
+      <AppShellContainer>
+        <GameLayout room={room} snapshot={snapshot} currentSessionPlayer={currentSessionPlayer} />
+      </AppShellContainer>
+    </AppShell>
   );
 }

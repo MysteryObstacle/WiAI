@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
+import { Providers } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,14 +18,21 @@ export const metadata: Metadata = {
   description: "A realtime social deduction game for finding the hidden AI."
 };
 
+export const viewport: Viewport = {
+  themeColor: "#090b0f",
+  colorScheme: "dark"
+};
+
 export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+    <html lang="zh-CN" className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

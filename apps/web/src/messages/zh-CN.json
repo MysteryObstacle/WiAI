@@ -1,0 +1,135 @@
+{
+  "app": {
+    "name": "Who is AI",
+    "title": "谁是AI",
+    "description": "通过问答、讨论和最终投票找出隐藏的AI"
+  },
+  "nav": {
+    "languageSwitch": "切换语言",
+    "roomContext": "房间 {roomCode}"
+  },
+  "lobby": {
+    "create": {
+      "title": "创建房间",
+      "description": "创建新房间并邀请其他玩家加入",
+      "nickname": "昵称",
+      "nicknamePlaceholder": "输入你的昵称",
+      "submit": "创建房间"
+    },
+    "join": {
+      "title": "加入房间",
+      "description": "输入房主提供的房间代码",
+      "nickname": "昵称",
+      "nicknamePlaceholder": "输入你的昵称",
+      "roomCode": "房间代码",
+      "roomCodePlaceholder": "输入房间代码",
+      "submit": "加入房间"
+    },
+    "room": {
+      "title": "大厅",
+      "roomCode": "房间代码",
+      "copyRoomCode": "复制房间代码",
+      "kick": "踢出",
+      "kickDisabled": "踢人功能已禁用"
+    },
+    "ready": {
+      "markReady": "准备",
+      "ready": "已准备",
+      "waiting": "等待中"
+    },
+    "start": {
+      "button": "开始游戏",
+      "disabledReasons": {
+        "notHost": "只有房主可以开始游戏",
+        "notEnoughPlayers": "需要三名玩家",
+        "playersNotReady": "等待玩家准备",
+        "ready": "准备开始"
+      }
+    }
+  },
+  "game": {
+    "phase": {
+      "lobby": "大厅",
+      "answer_prep": "答题准备",
+      "answer_reveal": "答案揭晓",
+      "discussion": "讨论",
+      "voting": "投票",
+      "settlement": "结算"
+    },
+    "round": "第 {round} 轮",
+    "countdown": "{seconds}秒",
+    "final": "最终",
+    "identity": {
+      "spectating": "观战中",
+      "player": "你是 {gameNumber} 号玩家"
+    },
+    "question": {
+      "waiting": "等待游戏开始"
+    },
+    "answer": {
+      "title": "提交你的答案",
+      "lockedHint": "本轮答案已锁定",
+      "inputHint": "写一个足够具体的答案来证明你是人类",
+      "placeholder": "写下你的答案...",
+      "submit": "提交",
+      "cancel": "取消",
+      "submitted": "已提交"
+    },
+    "reveal": {
+      "title": "答案揭晓",
+      "hint": "在讨论开始前仔细阅读每个答案"
+    },
+    "discussion": {
+      "title": "讨论",
+      "hint": "质疑模糊的答案，注意可疑的模式",
+      "empty": "暂无消息",
+      "placeholder": "提出尖锐的问题...",
+      "send": "发送"
+    },
+    "vote": {
+      "suspicionTitle": "怀疑投票",
+      "decisionTitle": "最终决定",
+      "recorded": "投票已记录",
+      "hint": "选择一名活跃玩家，不能投自己",
+      "cast": "投票",
+      "abstain": "弃权"
+    },
+    "settlement": {
+      "winner": "胜者",
+      "frozenPlayer": "被冻结的玩家",
+      "undecided": "未决定",
+      "unknown": "未知",
+      "roles": "角色",
+      "votes": "投票",
+      "abstained": "弃权"
+    }
+  },
+  "status": {
+    "online": "在线",
+    "disconnected": "已断开",
+    "host": "房主",
+    "ready": "已准备",
+    "waiting": "等待中",
+    "currentPlayer": "当前玩家"
+  },
+  "playerType": {
+    "human": "人类",
+    "ai": "AI"
+  },
+  "role": {
+    "hidden": "未公开"
+  },
+  "errors": {
+    "connection": "连接失败",
+    "validation": "验证错误",
+    "room": "房间错误",
+    "command": "命令错误",
+    "generic": "发生错误"
+  },
+  "a11y": {
+    "players": "玩家列表",
+    "copyRoomCode": "复制房间代码",
+    "sendChat": "发送消息",
+    "timer": "倒计时"
+  }
+}

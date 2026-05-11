@@ -1,101 +1,133 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { Room } from "colyseus.js";
 import { Check, Clipboard, Play, ShieldAlert } from "lucide-react";
 import { sendReady, sendStartGame } from "@/game-client/roomCommands";
 import type { LobbyPlayerSnapshot, WiaiSnapshot } from "@/game-client/types";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { StatusBadge } from "@/components/game/StatusBadge";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 
-export function LobbyRoom({
-  room,
-  snapshot,
-  currentLobbyPlayer
-}: {
+interface LobbyRoomProps {
   room: Room;
   snapshot: WiaiSnapshot;
   currentLobbyPlayer: LobbyPlayerSnapshot | undefined;
-}) {
+}
+
+export function LobbyRoom({ room, snapshot, currentLobbyPlayer }: LobbyRoomProps) {
+  const t = useTranslations();
+  const tLobby = useTranslations("lobby");
+  const tStatus = useTranslations("status");
+
   const isHost = Boolean(currentLobbyPlayer?.isHost);
   const nonHostPlayers = snapshot.lobbyPlayers.filter((player) => !player.isHost);
   const playersReady = nonHostPlayers.every((player) => player.isReady);
   const enoughPlayers = snapshot.lobbyPlayers.filter((player) => player.status === "online").length >= 3;
   const canStart = isHost && playersReady && enoughPlayers;
+
   const disabledReason = !isHost
-    ? "Only the host can start"
+    ? tLobby("start.disabledReasons.notHost")
     : !enoughPlayers
-      ? "Need three human players"
+      ? tLobby("start.disabledReasons.notEnoughPlayers")
       : !playersReady
-        ? "Waiting for ready players"
-        : "Ready";
+        ? tLobby("start.disabledReasons.playersNotReady")
+        : tLobby("start.disabledReasons.ready");
+
+  const getPlayerStatus = (player: LobbyPlayerSnapshot) => {
+    if (player.isHost) return tStatus("host");
+    if (player.isReady) return tLobby("ready.ready");
+    return tLobby("ready.waiting");
+  };
+
+  const getStatusBadgeStatus = (player: LobbyPlayerSnapshot): "host" | "ready" | "waiting" => {
+    if (player.isHost) return "host";
+    if (player.isReady) return "ready";
+    return "waiting";
+  };
 
   return (
-    <section className="lobby-room">
-      <div className="room-code-row">
-        <div>
-          <span className="section-label">Room code</span>
-          <strong data-testid="room-code">{snapshot.roomCode}</strong>
+    <TooltipProvider>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-input p-4">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {tLobby("room.roomCode")}
+            </span>
+            <strong data-testid="room-code" className="mt-1 block font-mono text-3xl tracking-wider">
+              {snapshot.roomCode}
+            </strong>
+          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="secondary"
+                size="icon"
+                aria-label={t("a11y.copyRoomCode")}
+                onClick={() => void navigator.clipboard.writeText(snapshot.roomCode)}
+              >
+                <Clipboard aria-hidden className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{tLobby("room.copyRoomCode")}</TooltipContent>
+          </Tooltip>
         </div>
-        <button
-          className="icon-button"
-          type="button"
-          aria-label="Copy room code"
-          title="Copy room code"
-          onClick={() => void navigator.clipboard.writeText(snapshot.roomCode)}
-        >
-          <Clipboard aria-hidden size={18} />
-        </button>
-      </div>
 
-      <div className="panel roster-panel">
-        <div className="panel-heading compact">
-          <h2>Lobby</h2>
-          <p>{disabledReason}</p>
-        </div>
-        <div className="roster-list">
-          {snapshot.lobbyPlayers.map((player) => (
-            <div className="roster-row" key={player.id}>
-              <div>
-                <strong>{player.nickname}</strong>
-                <span>{player.isHost ? "Host" : player.status}</span>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle>{tLobby("room.title")}</CardTitle>
+            <CardDescription>{disabledReason}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {snapshot.lobbyPlayers.map((player) => (
+              <div
+                className="flex items-center justify-between gap-3 rounded-lg border border-border bg-input p-3"
+                key={player.id}
+              >
+                <div>
+                  <strong className="block">{player.nickname}</strong>
+                  <span className="text-sm text-muted-foreground">
+                    {player.isHost ? tStatus("host") : player.status}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <StatusBadge status={getStatusBadgeStatus(player)} label={getPlayerStatus(player)} />
+                  {isHost && !player.isHost && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="secondary" size="sm" disabled>
+                          <ShieldAlert aria-hidden className="h-3.5 w-3.5" />
+                          {tLobby("room.kick")}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{tLobby("room.kickDisabled")}</TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
               </div>
-              <div className="roster-actions">
-                <span className={player.isHost || player.isReady ? "ready-pill active" : "ready-pill"}>
-                  {player.isHost ? "Host" : player.isReady ? "Ready" : "Waiting"}
-                </span>
-                {isHost && !player.isHost ? (
-                  <button className="mini-button" type="button" disabled title="Kick controls are P1-safe disabled">
-                    <ShieldAlert aria-hidden size={14} />
-                    Kick
-                  </button>
-                ) : null}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            ))}
+          </CardContent>
+        </Card>
 
-      <div className="lobby-actions">
-        {!isHost ? (
-          <button
-            data-testid="ready-toggle"
-            className={currentLobbyPlayer?.isReady ? "secondary-button active" : "secondary-button"}
-            type="button"
-            onClick={() => sendReady(room, !currentLobbyPlayer?.isReady)}
-          >
-            <Check aria-hidden size={18} />
-            {currentLobbyPlayer?.isReady ? "Ready" : "Mark ready"}
-          </button>
-        ) : null}
-        <button
-          data-testid="start-game"
-          className="primary-button"
-          type="button"
-          disabled={!canStart}
-          onClick={() => sendStartGame(room)}
-        >
-          <Play aria-hidden size={18} />
-          Start game
-        </button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+          {!isHost && (
+            <Button
+              data-testid="ready-toggle"
+              variant={currentLobbyPlayer?.isReady ? "secondary" : "secondary"}
+              className={currentLobbyPlayer?.isReady ? "border-accent text-accent-strong" : ""}
+              onClick={() => sendReady(room, !currentLobbyPlayer?.isReady)}
+            >
+              <Check aria-hidden className="h-4 w-4" />
+              {currentLobbyPlayer?.isReady ? tLobby("ready.ready") : tLobby("ready.markReady")}
+            </Button>
+          )}
+          <Button data-testid="start-game" disabled={!canStart} onClick={() => sendStartGame(room)} className="sm:ml-auto">
+            <Play aria-hidden className="h-4 w-4" />
+            {tLobby("start.button")}
+          </Button>
+        </div>
       </div>
-    </section>
+    </TooltipProvider>
   );
 }
