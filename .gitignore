@@ -22,6 +22,7 @@ out/
 *.log
 npm-debug.log*
 .cache/
+.superpowers/
 coverage/
 .nyc_output/
 playwright-report/
