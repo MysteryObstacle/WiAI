@@ -44,7 +44,7 @@ export function LocaleProvider({ children, initialLocale = "zh-CN", messages }: 
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale }}>
-      <IntlProvider locale={locale} messages={messages[locale] as Record<string, string>}>
+      <IntlProvider locale={locale} messages={messages[locale] as Record<string, string>} timeZone="Asia/Shanghai">
         {children}
       </IntlProvider>
     </LocaleContext.Provider>
