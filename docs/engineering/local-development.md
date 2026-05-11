@@ -3,7 +3,9 @@
 ## Prerequisites
 
 - Node.js 22+
-- npm
+- npm 7 or newer (workspaces). If `npm install` fails with `Unsupported URL Type "workspace:"`, upgrade npm: `npm install -g npm@latest`
+
+Internal packages use pinned `0.0.0` versions so npm can link workspace members without the `workspace:` protocol.
 
 ## Install
 
