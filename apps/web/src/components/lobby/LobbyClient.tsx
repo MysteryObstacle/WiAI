@@ -1,13 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { GameClient } from "@/components/game/GameClient";
 import { CreateRoomPanel } from "./CreateRoomPanel";
 import { JoinRoomPanel } from "./JoinRoomPanel";
 import { LobbyRoom } from "./LobbyRoom";
 import { useRoomConnection } from "@/game-client/useRoomConnection";
+import { AppShell, AppShellContainer } from "@/components/layout/AppShell";
+import { PageHeader, BrandMark, PageTitle } from "@/components/layout/PageHeader";
+import { LanguageSwitch } from "@/components/layout/LanguageSwitch";
 
-export function LobbyClient({ initialRoomCode = "" }: { initialRoomCode?: string }) {
+interface LobbyClientProps {
+  initialRoomCode?: string;
+}
+
+export function LobbyClient({ initialRoomCode = "" }: LobbyClientProps) {
+  const t = useTranslations("app");
   const [nickname, setNickname] = useState("Ada");
   const [roomCode, setRoomCode] = useState(initialRoomCode);
   const connection = useRoomConnection();
@@ -41,14 +50,14 @@ export function LobbyClient({ initialRoomCode = "" }: { initialRoomCode?: string
   }
 
   return (
-    <main className="app-shell">
-      <section className="lobby-stage" aria-label="Create or join Who is AI">
-        <div className="brand-lockup">
-          <div className="brand-mark">Wi</div>
-          <div>
-            <h1>Who is AI</h1>
-            <p>Find the hidden AI through answers, discussion, and a final vote.</p>
-          </div>
+    <AppShell>
+      <AppShellContainer aria-label={t("title")}>
+        <div className="flex items-start justify-between">
+          <PageHeader>
+            <BrandMark />
+            <PageTitle title={t("title")} description={t("description")} />
+          </PageHeader>
+          <LanguageSwitch />
         </div>
 
         {isConnected && connection.room ? (
@@ -58,7 +67,7 @@ export function LobbyClient({ initialRoomCode = "" }: { initialRoomCode?: string
             currentLobbyPlayer={connection.currentLobbyPlayer}
           />
         ) : (
-          <div className="entry-grid">
+          <div className="grid gap-4 md:grid-cols-2">
             <CreateRoomPanel
               nickname={nickname}
               setNickname={setNickname}
@@ -76,8 +85,8 @@ export function LobbyClient({ initialRoomCode = "" }: { initialRoomCode?: string
           </div>
         )}
 
-        {connection.error ? <p className="inline-error">{connection.error}</p> : null}
-      </section>
-    </main>
+        {connection.error && <p className="mt-4 text-danger">{connection.error}</p>}
+      </AppShellContainer>
+    </AppShell>
   );
 }

@@ -13,7 +13,7 @@
     "build": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@wiai/kernel": "0.0.0",
+    "@wiai/kernel": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

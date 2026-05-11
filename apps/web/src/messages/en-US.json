@@ -1,0 +1,135 @@
+{
+  "app": {
+    "name": "Who is AI",
+    "title": "Who is AI",
+    "description": "Find the hidden AI through answers, discussion, and a final vote"
+  },
+  "nav": {
+    "languageSwitch": "Switch language",
+    "roomContext": "Room {roomCode}"
+  },
+  "lobby": {
+    "create": {
+      "title": "Create room",
+      "description": "Host a new table and invite two more players",
+      "nickname": "Nickname",
+      "nicknamePlaceholder": "Enter your nickname",
+      "submit": "Create room"
+    },
+    "join": {
+      "title": "Join room",
+      "description": "Enter a room code from the host",
+      "nickname": "Nickname",
+      "nicknamePlaceholder": "Enter your nickname",
+      "roomCode": "Room code",
+      "roomCodePlaceholder": "Enter room code",
+      "submit": "Join room"
+    },
+    "room": {
+      "title": "Lobby",
+      "roomCode": "Room code",
+      "copyRoomCode": "Copy room code",
+      "kick": "Kick",
+      "kickDisabled": "Kick controls are disabled"
+    },
+    "ready": {
+      "markReady": "Mark ready",
+      "ready": "Ready",
+      "waiting": "Waiting"
+    },
+    "start": {
+      "button": "Start game",
+      "disabledReasons": {
+        "notHost": "Only the host can start",
+        "notEnoughPlayers": "Need three human players",
+        "playersNotReady": "Waiting for ready players",
+        "ready": "Ready"
+      }
+    }
+  },
+  "game": {
+    "phase": {
+      "lobby": "Lobby",
+      "answer_prep": "Answer prep",
+      "answer_reveal": "Answer reveal",
+      "discussion": "Discussion",
+      "voting": "Voting",
+      "settlement": "Settlement"
+    },
+    "round": "Round {round}",
+    "countdown": "{seconds}s",
+    "final": "Final",
+    "identity": {
+      "spectating": "Spectating",
+      "player": "You are Player {gameNumber}"
+    },
+    "question": {
+      "waiting": "Waiting for the table to begin"
+    },
+    "answer": {
+      "title": "Submit your answer",
+      "lockedHint": "Your answer is locked for this round",
+      "inputHint": "Keep it specific enough to sound human",
+      "placeholder": "Write a concise answer...",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "submitted": "Submitted"
+    },
+    "reveal": {
+      "title": "Answers revealed",
+      "hint": "Read the wording before discussion opens"
+    },
+    "discussion": {
+      "title": "Discussion",
+      "hint": "Challenge vague answers and note suspicious patterns",
+      "empty": "No messages yet",
+      "placeholder": "Ask a pointed question...",
+      "send": "Send"
+    },
+    "vote": {
+      "suspicionTitle": "Suspicion vote",
+      "decisionTitle": "Final decision",
+      "recorded": "Vote recorded",
+      "hint": "Choose one active player. Self-votes are blocked",
+      "cast": "Cast vote",
+      "abstain": "Abstain"
+    },
+    "settlement": {
+      "winner": "Winner",
+      "frozenPlayer": "Frozen player",
+      "undecided": "Undecided",
+      "unknown": "Unknown",
+      "roles": "Roles",
+      "votes": "Votes",
+      "abstained": "Abstained"
+    }
+  },
+  "status": {
+    "online": "Online",
+    "disconnected": "Disconnected",
+    "host": "Host",
+    "ready": "Ready",
+    "waiting": "Waiting",
+    "currentPlayer": "Current player"
+  },
+  "playerType": {
+    "human": "Human",
+    "ai": "Agent"
+  },
+  "role": {
+    "hidden": "Hidden"
+  },
+  "errors": {
+    "connection": "Connection failed",
+    "validation": "Validation error",
+    "room": "Room error",
+    "command": "Command error",
+    "generic": "An error occurred"
+  },
+  "a11y": {
+    "players": "Players",
+    "copyRoomCode": "Copy room code",
+    "sendChat": "Send chat",
+    "timer": "Countdown timer"
+  }
+}
