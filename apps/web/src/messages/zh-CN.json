@@ -2,6 +2,7 @@
   "app": {
     "name": "Who is AI",
     "title": "谁是AI",
+    "heroTitle": "Who is AI",
     "description": "通过问答、讨论和最终投票找出隐藏的AI"
   },
   "nav": {
@@ -63,6 +64,10 @@
       "spectating": "观战中",
       "player": "你是 {gameNumber} 号玩家"
     },
+    "player": {
+      "label": "{gameNumber} 号玩家",
+      "unknown": "未知玩家"
+    },
     "question": {
       "waiting": "等待游戏开始"
     },
@@ -102,6 +107,14 @@
       "roles": "角色",
       "votes": "投票",
       "abstained": "弃权"
+    },
+    "context": {
+      "title": "局势信息",
+      "answerPrepHint": "等待玩家提交答案，先观察玩家状态。",
+      "answerRevealHint": "答案正在公开，优先比较措辞差异。",
+      "discussionHint": "讨论时保持答案墙可见，方便追问可疑玩家。",
+      "votingHint": "投票前复盘答案和讨论线索。",
+      "settlementHint": "结算后公开角色和最终投票。"
     }
   },
   "status": {
@@ -117,7 +130,16 @@
     "ai": "AI"
   },
   "role": {
+    "citizen": "平民",
+    "shelterer": "庇护者",
+    "ai": "AI",
     "hidden": "未公开"
+  },
+  "winnerSide": {
+    "citizen": "平民胜利",
+    "shelterer": "庇护者胜利",
+    "ai": "AI胜利",
+    "undecided": "未决定"
   },
   "errors": {
     "connection": "连接失败",

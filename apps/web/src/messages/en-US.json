@@ -2,6 +2,7 @@
   "app": {
     "name": "Who is AI",
     "title": "Who is AI",
+    "heroTitle": "Who is AI",
     "description": "Find the hidden AI through answers, discussion, and a final vote"
   },
   "nav": {
@@ -63,6 +64,10 @@
       "spectating": "Spectating",
       "player": "You are Player {gameNumber}"
     },
+    "player": {
+      "label": "Player {gameNumber}",
+      "unknown": "Unknown player"
+    },
     "question": {
       "waiting": "Waiting for the table to begin"
     },
@@ -102,6 +107,14 @@
       "roles": "Roles",
       "votes": "Votes",
       "abstained": "Abstained"
+    },
+    "context": {
+      "title": "Table context",
+      "answerPrepHint": "Wait for answers while watching player status.",
+      "answerRevealHint": "Answers are public now. Compare wording first.",
+      "discussionHint": "Keep the answer wall visible while questioning suspicious players.",
+      "votingHint": "Review answers and discussion clues before voting.",
+      "settlementHint": "Roles and final votes are public after settlement."
     }
   },
   "status": {
@@ -117,7 +130,16 @@
     "ai": "Agent"
   },
   "role": {
+    "citizen": "Citizen",
+    "shelterer": "Shelterer",
+    "ai": "AI",
     "hidden": "Hidden"
+  },
+  "winnerSide": {
+    "citizen": "Citizens win",
+    "shelterer": "Shelterer wins",
+    "ai": "AI wins",
+    "undecided": "Undecided"
   },
   "errors": {
     "connection": "Connection failed",
