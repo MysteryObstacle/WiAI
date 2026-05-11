@@ -10,6 +10,8 @@ import { useRoomConnection } from "@/game-client/useRoomConnection";
 import { AppShell, AppShellContainer } from "@/components/layout/AppShell";
 import { PageHeader, BrandMark, PageTitle } from "@/components/layout/PageHeader";
 import { LanguageSwitch } from "@/components/layout/LanguageSwitch";
+import { LobbyBackdrop } from "./LobbyBackdrop";
+import { showLobbySciFiBackdrop } from "./lobbyBackdropVisibility";
 
 interface LobbyClientProps {
   initialRoomCode?: string;
@@ -17,6 +19,7 @@ interface LobbyClientProps {
 
 export function LobbyClient({ initialRoomCode = "" }: LobbyClientProps) {
   const t = useTranslations("app");
+  const tErrors = useTranslations("errors");
   const [nickname, setNickname] = useState("Ada");
   const [roomCode, setRoomCode] = useState(initialRoomCode);
   const connection = useRoomConnection();
@@ -33,6 +36,7 @@ export function LobbyClient({ initialRoomCode = "" }: LobbyClientProps) {
   }, [initialRoomCode]);
 
   const isConnected = connection.status === "connected" && connection.room;
+  const showBackdrop = showLobbySciFiBackdrop(Boolean(isConnected), Boolean(connection.room));
   const isGameVisible =
     isConnected &&
     (connection.snapshot.status === "playing" ||
@@ -51,11 +55,12 @@ export function LobbyClient({ initialRoomCode = "" }: LobbyClientProps) {
 
   return (
     <AppShell>
-      <AppShellContainer aria-label={t("title")}>
+      {showBackdrop ? <LobbyBackdrop /> : null}
+      <AppShellContainer aria-label={t("title")} className="relative z-10">
         <div className="flex items-start justify-between">
           <PageHeader>
             <BrandMark />
-            <PageTitle title={t("title")} description={t("description")} />
+            <PageTitle title={t("heroTitle")} description={t("description")} />
           </PageHeader>
           <LanguageSwitch />
         </div>
@@ -85,7 +90,11 @@ export function LobbyClient({ initialRoomCode = "" }: LobbyClientProps) {
           </div>
         )}
 
-        {connection.error && <p className="mt-4 text-danger">{connection.error}</p>}
+        {connection.error ? (
+          <p className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive" role="alert">
+            {tErrors("generic")}
+          </p>
+        ) : null}
       </AppShellContainer>
     </AppShell>
   );
