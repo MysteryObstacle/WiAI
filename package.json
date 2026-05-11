@@ -1,0 +1,30 @@
+{
+  "name": "wiai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w apps/server\" \"npm run dev -w apps/web\"",
+    "test": "npm run test -ws --if-present",
+    "test:architecture": "npm run test:architecture -ws --if-present",
+    "test:e2e": "playwright test",
+    "typecheck": "npm run typecheck -ws --if-present",
+    "lint": "npm run lint -ws --if-present",
+    "build": "npm run build -ws --if-present"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^24.10.1",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vitest": "^4.1.5"
+  }
+}
