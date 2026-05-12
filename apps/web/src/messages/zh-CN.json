@@ -47,6 +47,10 @@
         "ready": "准备开始"
       }
     },
+    "debug": {
+      "addPlayers": "添加调试玩家",
+      "addPlayersDisabled": "暂不需要调试玩家"
+    },
     "promo": {
       "hero": {
         "subtitle": "通过对话证明你是人类",

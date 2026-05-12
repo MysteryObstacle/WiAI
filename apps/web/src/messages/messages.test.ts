@@ -35,6 +35,8 @@ describe("locale messages", () => {
         "role.shelterer",
         "role.ai",
         "role.hidden",
+        "lobby.debug.addPlayers",
+        "lobby.debug.addPlayersDisabled",
         "winnerSide.citizen",
         "winnerSide.shelterer",
         "winnerSide.ai",

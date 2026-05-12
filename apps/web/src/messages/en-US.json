@@ -47,6 +47,10 @@
         "ready": "Ready"
       }
     },
+    "debug": {
+      "addPlayers": "Add debug players",
+      "addPlayersDisabled": "Debug players are not needed"
+    },
     "promo": {
       "hero": {
         "subtitle": "Prove you're human, by talking",
