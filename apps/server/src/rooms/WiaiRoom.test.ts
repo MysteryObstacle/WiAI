@@ -119,4 +119,38 @@ describe("RoomApplicationService", () => {
 
     db.close();
   });
+
+  it("persists phase snapshots for multiple rooms without id collisions", async () => {
+    const db = await createWiaiDatabaseClient();
+
+    for (const roomNumber of [1, 2]) {
+      const service = new RoomApplicationService({
+        roomId: `room_${roomNumber}`,
+        roomCode: `ROOM${roomNumber}`,
+        db
+      });
+      service.joinLobby({ lobbyPlayerId: `lp_host_${roomNumber}`, nickname: "Host", isHost: true });
+      service.joinLobby({ lobbyPlayerId: `lp_ada_${roomNumber}`, nickname: "Ada", isHost: false });
+      service.joinLobby({ lobbyPlayerId: `lp_grace_${roomNumber}`, nickname: "Grace", isHost: false });
+      service.execute({
+        type: "ready",
+        actorLobbyPlayerId: `lp_ada_${roomNumber}`,
+        isReady: true
+      });
+      service.execute({
+        type: "ready",
+        actorLobbyPlayerId: `lp_grace_${roomNumber}`,
+        isReady: true
+      });
+
+      const start = service.execute({
+        type: "start_game",
+        actorLobbyPlayerId: `lp_host_${roomNumber}`
+      });
+
+      expect(start.ok).toBe(true);
+    }
+
+    db.close();
+  });
 });
