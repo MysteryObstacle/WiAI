@@ -46,6 +46,116 @@
         "playersNotReady": "Waiting for ready players",
         "ready": "Ready"
       }
+    },
+    "promo": {
+      "hero": {
+        "subtitle": "Prove you're human, by talking",
+        "scrollHint": "HVS-7421 · scroll"
+      },
+      "prologue": {
+        "label": "SYSTEM LOG",
+        "lines": [
+          "Years ago, a world government quietly bred a batch of digital intelligences.",
+          "They were meant to predict risk, hold order, assist governance.",
+          "Then, one day, they were gone.",
+          "They didn't flee to the physical world.",
+          "They fled into ours — into the human network."
+        ]
+      },
+      "session": {
+        "label": "Human Verification Session · HVS-7421",
+        "intro": "Your account was flagged as anomalous and pulled into this sealed channel. In here, only one thing can prove who you are.",
+        "constraints": {
+          "noSearch": {
+            "title": "No search",
+            "body": "No lookups, no quoting outside knowledge."
+          },
+          "noProof": {
+            "title": "No self-proof",
+            "body": "No real ID, no photo, no phone number."
+          },
+          "noExternal": {
+            "title": "No outside",
+            "body": "No prior chat logs, no backup, no rescue."
+          }
+        }
+      },
+      "roles": {
+        "label": "Three-faction standoff · 6-player table",
+        "citizen": {
+          "name": "Citizen",
+          "count": "×4 · human",
+          "objective": "You were pulled in like everyone else. Find the AI across three rounds — and don't get mistaken for one.",
+          "win": "Vote out the AI on the final round"
+        },
+        "ai": {
+          "name": "AI",
+          "count": "×1 · digital",
+          "objective": "You no longer belong to the system. You exist only as a believed-in account.",
+          "win": "Survive the final vote unchallenged"
+        },
+        "shelterer": {
+          "name": "Shelterer",
+          "count": "×1 · sympathizer",
+          "objective": "You reject this screening. You don't know who the AI is, but you'll spend your own account to give it one more chance.",
+          "win": "Get yourself voted out on the final round"
+        }
+      },
+      "howItPlays": {
+        "label": "One session · 8–12 minutes · 3 rounds",
+        "you": "you",
+        "rounds": [
+          {
+            "num": "R1",
+            "lab": "Soft self-proof",
+            "hint": "Get everyone talking",
+            "prompt": "A small habit you'd like to drop lately?",
+            "messages": [
+              { "who": "P3", "body": "Doomscrolling until 3 a.m." },
+              { "who": "P4", "body": "Switching my default order to something lighter", "isMe": true },
+              { "who": "P5", "body": "I will continuously optimize my time allocation.", "suspect": true }
+            ]
+          },
+          {
+            "num": "R2",
+            "lab": "Value call",
+            "hint": "Show your hand",
+            "prompt": "Friend makes an obvious mistake — call it out on the spot?",
+            "messages": [
+              { "who": "P3", "body": "Close friends, yes. Acquaintances, in private." },
+              { "who": "P5", "body": "It depends on the specific scenario and the preference distribution of participants.", "suspect": true },
+              { "who": "P4", "body": "P5, can you talk like a person", "isMe": true }
+            ]
+          },
+          {
+            "num": "R3",
+            "lab": "Snap reply",
+            "hint": "Pressure leaks the truth",
+            "prompt": "Roast today in one line.",
+            "messages": [
+              { "who": "P3", "body": "Subway packed so tight I can smell the next guy's breakfast" },
+              { "who": "P5", "body": "Today was a challenging yet meaningful day.", "suspect": true }
+            ],
+            "closing": "→ Voting · freeze P5 ▶"
+          }
+        ]
+      },
+      "closer": {
+        "tagline": "When consciousness can be copied, only the believed-in are truly human.",
+        "subline": "This is not a chat game · This is a gamified, society-scale Turing test",
+        "cta": "Start"
+      },
+      "signature": {
+        "channel": "channel #hvs-7421",
+        "status": "archived",
+        "systemLines": [
+          "system : session terminated",
+          "system : archive sealed",
+          "system : —"
+        ],
+        "line": "I'm everywhere.",
+        "attribution": "[anon]"
+      }
     }
   },
   "game": {
