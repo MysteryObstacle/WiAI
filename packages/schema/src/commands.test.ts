@@ -43,4 +43,46 @@ describe("browser command schemas", () => {
       content: "Player 2 sounds too generic."
     });
   });
+
+  it("parses add_debug_players with a positive count", () => {
+    const parsed = browserCommandSchema.parse({
+      type: "add_debug_players",
+      payload: { count: 2 },
+      requestId: "req_debug"
+    });
+
+    expect(parsed).toEqual({
+      type: "add_debug_players",
+      payload: { count: 2 },
+      requestId: "req_debug"
+    });
+  });
+
+  it("rejects add_debug_players without a positive count", () => {
+    const parsed = browserCommandSchema.safeParse({
+      type: "add_debug_players",
+      payload: { count: 0 }
+    });
+
+    expect(parsed.success).toBe(false);
+  });
+
+  it("maps add_debug_players to a host lobby actor intent", () => {
+    const parsed = browserCommandSchema.parse({
+      type: "add_debug_players",
+      payload: { count: 2 },
+      requestId: "req_debug"
+    });
+
+    expect(
+      mapBrowserCommandToIntent(parsed, {
+        actorLobbyPlayerId: "lp_host"
+      })
+    ).toEqual({
+      type: "add_debug_players",
+      actorLobbyPlayerId: "lp_host",
+      requestId: "req_debug",
+      count: 2
+    });
+  });
 });
