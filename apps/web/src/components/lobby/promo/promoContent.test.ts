@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { promoContent } from "./promoContent";
+import { promoAssets, promoContent } from "./promoContent";
 
 describe("promoContent", () => {
   it("declares exactly three constraint columns", () => {
@@ -16,19 +16,41 @@ describe("promoContent", () => {
     const accents = new Set(promoContent.roles.map((r) => r.accent));
     expect(accents.size).toBe(3);
     expect([...accents].sort()).toEqual(["ai", "citizen", "shelter"]);
-    const totalCount =
-      promoContent.roles.find((r) => r.key === "citizen")!.headcount +
-      promoContent.roles.find((r) => r.key === "ai")!.headcount +
-      promoContent.roles.find((r) => r.key === "shelterer")!.headcount;
+    const totalCount = promoContent.roles.reduce((sum, role) => sum + role.headcount, 0);
     expect(totalCount).toBe(6);
   });
 
-  it("declares three rounds with at least two messages each", () => {
-    expect(promoContent.howItPlays.roundCount).toBe(3);
-    expect(promoContent.howItPlays.minMessagesPerRound).toBe(2);
+  it("models one decisive final round instead of visible R labels", () => {
+    expect(promoContent.howItPlays.certificationRoundCount).toBe(3);
+    expect(promoContent.howItPlays.visibleRoundLabels).toHaveLength(0);
+    expect(JSON.stringify(promoContent.howItPlays)).not.toMatch(/\bR[1-3]\b/);
+    expect(promoContent.howItPlays.decisiveRound.answerCount).toBe(4);
+    expect(promoContent.howItPlays.decisiveRound.discussionCount).toBe(4);
+    expect(promoContent.howItPlays.decisiveRound.hasSheltererMisdirection).toBe(true);
   });
 
-  it("declares three system lines in the signature section", () => {
-    expect(promoContent.signature.systemLineCount).toBe(3);
+  it("declares four generated promo assets", () => {
+    expect(promoAssets).toEqual([
+      {
+        key: "verificationGrid",
+        src: "/promo/verification-grid.png",
+        altKey: "verificationGrid"
+      },
+      {
+        key: "memoryAnswerSheet",
+        src: "/promo/memory-answer-sheet.png",
+        altKey: "memoryAnswerSheet"
+      },
+      {
+        key: "voteFreezeSheet",
+        src: "/promo/vote-freeze-sheet.png",
+        altKey: "voteFreezeSheet"
+      },
+      {
+        key: "archiveResidue",
+        src: "/promo/archive-residue.png",
+        altKey: "archiveResidue"
+      }
+    ]);
   });
 });

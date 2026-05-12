@@ -44,6 +44,7 @@ export function LobbyRoom({ room, snapshot, currentLobbyPlayer }: LobbyRoomProps
   const getPlayerStatus = (player: LobbyPlayerSnapshot) => {
     if (player.isHost) return tStatus("host");
     if (player.isReady) return tLobby("ready.ready");
+    if (player.status === "disconnected") return tStatus("disconnected");
     return tLobby("ready.waiting");
   };
 
@@ -94,7 +95,7 @@ export function LobbyRoom({ room, snapshot, currentLobbyPlayer }: LobbyRoomProps
                 <div>
                   <strong className="block">{player.nickname}</strong>
                   <span className="text-sm text-muted-foreground">
-                    {player.isHost ? tStatus("host") : player.status}
+                    {getPlayerStatus(player)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -121,7 +122,7 @@ export function LobbyRoom({ room, snapshot, currentLobbyPlayer }: LobbyRoomProps
             <Button
               data-testid="ready-toggle"
               variant={currentLobbyPlayer?.isReady ? "secondary" : "secondary"}
-              className={currentLobbyPlayer?.isReady ? "border-accent text-accent-strong" : ""}
+              className={currentLobbyPlayer?.isReady ? "border border-primary text-primary" : ""}
               onClick={() => sendReady(room, !currentLobbyPlayer?.isReady)}
             >
               <Check aria-hidden className="h-4 w-4" />

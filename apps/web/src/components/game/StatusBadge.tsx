@@ -7,11 +7,11 @@ const statusBadgeVariants = cva(
   {
     variants: {
       status: {
-        host: "border border-accent/55 text-accent-strong",
-        ready: "border border-accent/55 text-accent-strong",
+        host: "border border-primary/55 text-primary",
+        ready: "border border-primary/55 text-primary",
         waiting: "border border-border text-muted-foreground",
-        disconnected: "border border-danger/55 text-danger",
-        online: "border border-accent/55 text-accent-strong",
+        disconnected: "border border-destructive/55 text-destructive",
+        online: "border border-primary/55 text-primary",
         current: "border border-warning/55 text-warning"
       }
     },

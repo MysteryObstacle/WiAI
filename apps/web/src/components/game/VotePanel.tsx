@@ -41,7 +41,7 @@ export function VotePanel({ room, snapshot, currentSessionPlayer }: VotePanelPro
               <button
                 data-testid={`vote-option-${player.gameNumber}`}
                 className={cn(
-                  "flex items-start gap-3 rounded-lg border border-border bg-input p-3.5 text-left transition-colors hover:bg-surface-strong disabled:opacity-50",
+                  "flex items-start gap-3 rounded-lg border border-border bg-input p-3.5 text-left transition-colors hover:bg-accent disabled:opacity-50",
                   targetGameNumber === player.gameNumber && "border-warning ring-1 ring-warning/35"
                 )}
                 key={player.id}

@@ -10,7 +10,7 @@ const PlayerNumber = React.forwardRef<HTMLSpanElement, PlayerNumberProps>(
     <span
       ref={ref}
       className={cn(
-        "grid h-9 w-9 place-items-center rounded-full bg-surface-strong font-mono text-sm text-accent-strong",
+        "grid h-9 w-9 place-items-center rounded-full bg-secondary font-mono text-sm text-primary",
         className
       )}
       {...props}

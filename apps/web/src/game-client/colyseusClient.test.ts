@@ -29,4 +29,10 @@ describe("getColyseusServerUrl", () => {
       "wss://wiai.example.test:2567"
     );
   });
+
+  it("uses localhost when called during prerender without a browser location", () => {
+    delete process.env.NEXT_PUBLIC_WIAI_SERVER_URL;
+
+    expect(getColyseusServerUrl()).toBe("ws://127.0.0.1:2567");
+  });
 });

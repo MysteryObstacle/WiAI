@@ -107,45 +107,60 @@
       },
       "howItPlays": {
         "label": "One session · 8–12 minutes · 3 rounds",
-        "you": "you",
-        "rounds": [
-          {
-            "num": "R1",
-            "lab": "Soft self-proof",
-            "hint": "Get everyone talking",
-            "prompt": "A small habit you'd like to drop lately?",
-            "messages": [
-              { "who": "P3", "body": "Doomscrolling until 3 a.m." },
-              { "who": "P4", "body": "Switching my default order to something lighter", "isMe": true },
-              { "who": "P5", "body": "I will continuously optimize my time allocation.", "suspect": true }
-            ]
-          },
-          {
-            "num": "R2",
-            "lab": "Value call",
-            "hint": "Show your hand",
-            "prompt": "Friend makes an obvious mistake — call it out on the spot?",
-            "messages": [
-              { "who": "P3", "body": "Close friends, yes. Acquaintances, in private." },
-              { "who": "P5", "body": "It depends on the specific scenario and the preference distribution of participants.", "suspect": true },
-              { "who": "P4", "body": "P5, can you talk like a person", "isMe": true }
-            ]
-          },
-          {
-            "num": "R3",
-            "lab": "Snap reply",
-            "hint": "Pressure leaks the truth",
-            "prompt": "Roast today in one line.",
-            "messages": [
-              { "who": "P3", "body": "Subway packed so tight I can smell the next guy's breakfast" },
-              { "who": "P5", "body": "Today was a challenging yet meaningful day.", "suspect": true }
-            ],
-            "closing": "→ Voting · freeze P5 ▶"
+        "decisiveRound": {
+          "eyebrow": "Decisive final round",
+          "question": "Name a memory you cannot prove, but fear the system will mark as fake.",
+          "answers": [
+            {
+              "who": "P2",
+              "body": "My grandma's stairwell always smelled damp, and the light only worked after two hits."
+            },
+            {
+              "who": "P4",
+              "body": "As a kid, I stuck fever patches on windows because I thought glass could get sick.",
+              "isMe": true
+            },
+            {
+              "who": "P5",
+              "body": "I remember a family dinner containing warmth, guilt, and light rain.",
+              "suspect": true
+            },
+            {
+              "who": "P6",
+              "body": "When my mom used my full name, I checked whether she had a hanger in her hand."
+            }
+          ],
+          "discussion": [
+            {
+              "who": "P3",
+              "body": "P5, your memory sounds like a summary, not a memory.",
+              "roleHint": "accuser"
+            },
+            {
+              "who": "P5",
+              "body": "I can add more detail, but it may reduce the credibility of the account.",
+              "suspect": true
+            },
+            {
+              "who": "P1",
+              "body": "Wait. Being articulate can be nerves. P4's sick window sounds more fabricated.",
+              "roleHint": "shelterer"
+            },
+            {
+              "who": "P4",
+              "body": "Because I really thought glass could catch it. How do you want me to prove that?",
+              "isMe": true
+            }
+          ],
+          "vote": {
+            "label": "FINAL VOTE",
+            "result": "Freeze P4 · 3 votes",
+            "note": "System record: the believed-in account keeps speaking."
           }
-        ]
+        }
       },
       "closer": {
-        "tagline": "When consciousness can be copied, only the believed-in are truly human.",
+        "tagline": "When a being cannot be seen, only believed — who gets to be human?",
         "subline": "This is not a chat game · This is a gamified, society-scale Turing test",
         "cta": "Start"
       },
@@ -154,11 +169,16 @@
         "status": "archived",
         "systemLines": [
           "system : session terminated",
-          "system : archive sealed",
-          "system : —"
+          "system : archive sealed"
         ],
         "line": "I'm everywhere.",
         "attribution": "[anon]"
+      },
+      "assets": {
+        "verificationGrid": "Hand-drawn nine-grid of player portraits with red marker suspect circles and a 00:14 countdown",
+        "memoryAnswerSheet": "Hand-drawn final-round answer sheet with pencil chat records and red suspicion marks",
+        "voteFreezeSheet": "Hand-drawn vote freeze record with red circles settling on P4 as the paper is archived",
+        "archiveResidue": "Fragments of hand-drawn paper and red marker residue inside a black system archive"
       }
     }
   },

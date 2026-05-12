@@ -107,45 +107,60 @@
       },
       "howItPlays": {
         "label": "一局 8–12 分钟 · 3 轮认证",
-        "you": "你",
-        "rounds": [
-          {
-            "num": "R1",
-            "lab": "轻度自证",
-            "hint": "让每个人开口",
-            "prompt": "最近你想改掉的小习惯？",
-            "messages": [
-              { "who": "P3", "body": "晚上刷短视频到 3 点" },
-              { "who": "P4", "body": "把外卖默认换成清淡的", "isMe": true },
-              { "who": "P5", "body": "我会持续优化我的时间分配", "suspect": true }
-            ]
-          },
-          {
-            "num": "R2",
-            "lab": "价值判断",
-            "hint": "暴露立场",
-            "prompt": "朋友犯了明显错误，你会当场指出？",
-            "messages": [
-              { "who": "P3", "body": "关系亲的当场，不熟的私聊" },
-              { "who": "P5", "body": "这取决于具体情境和参与者的偏好分布", "suspect": true },
-              { "who": "P4", "body": "P5 你能不能说人话", "isMe": true }
-            ]
-          },
-          {
-            "num": "R3",
-            "lab": "即时反应",
-            "hint": "压力下出真",
-            "prompt": "用一句话吐槽今天",
-            "messages": [
-              { "who": "P3", "body": "地铁挤得能闻到下个人的早餐" },
-              { "who": "P5", "body": "今天是充满挑战但富有意义的一天", "suspect": true }
-            ],
-            "closing": "→ 投票阶段 · 冻结 P5 ▶"
+        "decisiveRound": {
+          "eyebrow": "决定性最终回合",
+          "question": "说出一个你无法证明、但你害怕被系统判定为假的记忆。",
+          "answers": [
+            {
+              "who": "P2",
+              "body": "我奶奶家楼道里总有一股潮湿的灰味，灯要拍两下才亮。"
+            },
+            {
+              "who": "P4",
+              "body": "我小时候把退烧贴贴在玻璃上，以为窗户也会发烧。",
+              "isMe": true
+            },
+            {
+              "who": "P5",
+              "body": "我记得一次家庭晚餐，其中包含温暖、愧疚与轻微的雨声。",
+              "suspect": true
+            },
+            {
+              "who": "P6",
+              "body": "我妈喊我全名的时候，我会先看她手里有没有衣架。"
+            }
+          ],
+          "discussion": [
+            {
+              "who": "P3",
+              "body": "P5，你的记忆像摘要，不像记忆。",
+              "roleHint": "accuser"
+            },
+            {
+              "who": "P5",
+              "body": "我可以补充更多细节，但它们可能降低叙述可信度。",
+              "suspect": true
+            },
+            {
+              "who": "P1",
+              "body": "等一下，太会表达也可能只是紧张。P4 的窗户发烧更像编的。",
+              "roleHint": "shelterer"
+            },
+            {
+              "who": "P4",
+              "body": "因为我真的以为玻璃会传染。你要我怎么证明？",
+              "isMe": true
+            }
+          ],
+          "vote": {
+            "label": "FINAL VOTE",
+            "result": "冻结 P4 · 3 票",
+            "note": "系统记录：被相信的人继续发言。"
           }
-        ]
+        }
       },
       "closer": {
-        "tagline": "当意识可以被复制，被相信的人，才是真正的人。",
+        "tagline": "当一个存在无法被看见，只有被相信——谁才是人类？",
         "subline": "这不是一场聊天游戏 · 这是一次被游戏化的社会级图灵测试",
         "cta": "Start"
       },
@@ -154,11 +169,16 @@
         "status": "archived",
         "systemLines": [
           "system : session terminated",
-          "system : archive sealed",
-          "system : —"
+          "system : archive sealed"
         ],
         "line": "I'm everywhere.",
         "attribution": "[anon]"
+      },
+      "assets": {
+        "verificationGrid": "手绘九宫格玩家头像，红色马克笔圈出可疑对象，顶部显示 00:14 倒计时",
+        "memoryAnswerSheet": "手绘最终回合回答纸，铅笔聊天记录上有红色怀疑标记",
+        "voteFreezeSheet": "手绘投票冻结记录，红色圈选停在 P4，纸面被系统归档",
+        "archiveResidue": "黑色系统背景里残留的手绘纸张和红色标记碎片"
       }
     }
   },
