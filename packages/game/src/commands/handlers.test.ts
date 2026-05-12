@@ -118,6 +118,45 @@ describe("CommandBus handlers", () => {
     expect(state.events.map((event) => event.type)).toContain("game.started");
   });
 
+  it("starts a session with debug players as managed humans", () => {
+    const state = createInitialGameState({
+      roomId: "room_1",
+      roomCode: "ABC123",
+      config: {
+        minPlayers: 3,
+        maxPlayers: 6,
+        phaseDurationsMs: {
+          answer_prep: 30_000,
+          answer_reveal: 3_000,
+          discussion: 30_000,
+          voting: 30_000,
+          settlement: 0
+        }
+      }
+    });
+    const bus = new CommandBus();
+    addLobbyPlayer(state, { id: "lp_host", nickname: "Host", isHost: true });
+    const addDebug = bus.execute(state, {
+      type: "add_debug_players",
+      actorLobbyPlayerId: "lp_host",
+      count: 2
+    });
+    expect(addDebug.ok).toBe(true);
+
+    const start = bus.execute(state, {
+      type: "start_game",
+      actorLobbyPlayerId: "lp_host"
+    });
+
+    expect(start.ok).toBe(true);
+    expect(state.sessionPlayers.filter((player) => player.controlMode === "managed")).toHaveLength(2);
+    expect(
+      state.sessionPlayers
+        .filter((player) => player.controlMode === "managed")
+        .every((player) => player.playerType === "human" && player.role !== "ai")
+    ).toBe(true);
+  });
+
   it("rejects invalid phase, duplicate answer, invalid ballot, self vote, and duplicate ballot", () => {
     const state = createLobby();
     const bus = new CommandBus();

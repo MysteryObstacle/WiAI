@@ -4,10 +4,17 @@ export interface RoleAssignmentStrategy {
   assign(lobbyPlayers: LobbyPlayer[]): SessionPlayer[];
 }
 
-export class DeterministicRoleAssignmentStrategy implements RoleAssignmentStrategy {
+export type SheltererPicker = (humanCount: number) => number;
+
+export class RandomRoleAssignmentStrategy implements RoleAssignmentStrategy {
+  constructor(private readonly pickSheltererIndex: SheltererPicker = pickRandomIndex) {}
+
   assign(lobbyPlayers: LobbyPlayer[]): SessionPlayer[] {
     const onlineHumans = lobbyPlayers.filter((player) => player.status === "online");
-    const sheltererLobbyId = onlineHumans.find((player) => !player.isHost)?.id ?? onlineHumans[0]?.id;
+    const sheltererIndex = normalizeIndex(
+      this.pickSheltererIndex(onlineHumans.length),
+      onlineHumans.length
+    );
 
     const humans: SessionPlayer[] = onlineHumans.map((player, index) => ({
       id: `sp_${player.id}`,
@@ -15,8 +22,8 @@ export class DeterministicRoleAssignmentStrategy implements RoleAssignmentStrate
       gameNumber: index + 1,
       displayName: player.nickname,
       playerType: "human",
-      role: player.id === sheltererLobbyId ? "shelterer" : "citizen",
-      controlMode: "player",
+      role: index === sheltererIndex ? "shelterer" : "citizen",
+      controlMode: isManagedDebugLobbyPlayerId(player.id) ? "managed" : "player",
       isActive: true
     }));
 
@@ -35,6 +42,22 @@ export class DeterministicRoleAssignmentStrategy implements RoleAssignmentStrate
   }
 }
 
+export function isManagedDebugLobbyPlayerId(lobbyPlayerId: string): boolean {
+  return /^lp_debug_\d+$/.test(lobbyPlayerId);
+}
+
 export function assignRoles(lobbyPlayers: LobbyPlayer[]): SessionPlayer[] {
-  return new DeterministicRoleAssignmentStrategy().assign(lobbyPlayers);
+  return new RandomRoleAssignmentStrategy().assign(lobbyPlayers);
+}
+
+function pickRandomIndex(humanCount: number): number {
+  return humanCount > 0 ? Math.floor(Math.random() * humanCount) : 0;
+}
+
+function normalizeIndex(index: number, length: number): number {
+  if (length < 1) {
+    return -1;
+  }
+
+  return Math.max(0, Math.min(length - 1, index));
 }
