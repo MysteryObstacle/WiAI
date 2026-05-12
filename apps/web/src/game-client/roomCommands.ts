@@ -8,6 +8,10 @@ export function sendStartGame(room: Room) {
   room.send("start_game", {});
 }
 
+export function sendAddDebugPlayers(room: Room, count: number) {
+  room.send("add_debug_players", { count });
+}
+
 export function sendAnswer(room: Room, content: string) {
   room.send("submit_answer", { content });
 }

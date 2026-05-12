@@ -2,8 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import type { Room } from "colyseus.js";
-import { Check, Clipboard, Play, ShieldAlert } from "lucide-react";
-import { sendReady, sendStartGame } from "@/game-client/roomCommands";
+import { Check, Clipboard, Play, ShieldAlert, UserPlus } from "lucide-react";
+import { sendAddDebugPlayers, sendReady, sendStartGame } from "@/game-client/roomCommands";
 import type { LobbyPlayerSnapshot, WiaiSnapshot } from "@/game-client/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -24,8 +24,14 @@ export function LobbyRoom({ room, snapshot, currentLobbyPlayer }: LobbyRoomProps
   const isHost = Boolean(currentLobbyPlayer?.isHost);
   const nonHostPlayers = snapshot.lobbyPlayers.filter((player) => !player.isHost);
   const playersReady = nonHostPlayers.every((player) => player.isReady);
-  const enoughPlayers = snapshot.lobbyPlayers.filter((player) => player.status === "online").length >= 3;
+  const minPlayers = 3;
+  const maxPlayers = 6;
+  const onlinePlayerCount = snapshot.lobbyPlayers.filter((player) => player.status === "online").length;
+  const enoughPlayers = onlinePlayerCount >= minPlayers;
   const canStart = isHost && playersReady && enoughPlayers;
+  const debugPlayersToAdd = Math.max(0, minPlayers - onlinePlayerCount);
+  const canAddDebugPlayers = isHost && debugPlayersToAdd > 0 && onlinePlayerCount < maxPlayers;
+  const showDebugControls = process.env.NODE_ENV === "development" && isHost && snapshot.phase === "lobby";
 
   const disabledReason = !isHost
     ? tLobby("start.disabledReasons.notHost")
@@ -38,6 +44,7 @@ export function LobbyRoom({ room, snapshot, currentLobbyPlayer }: LobbyRoomProps
   const getPlayerStatus = (player: LobbyPlayerSnapshot) => {
     if (player.isHost) return tStatus("host");
     if (player.isReady) return tLobby("ready.ready");
+    if (player.status === "disconnected") return tStatus("disconnected");
     return tLobby("ready.waiting");
   };
 
@@ -88,7 +95,7 @@ export function LobbyRoom({ room, snapshot, currentLobbyPlayer }: LobbyRoomProps
                 <div>
                   <strong className="block">{player.nickname}</strong>
                   <span className="text-sm text-muted-foreground">
-                    {player.isHost ? tStatus("host") : player.status}
+                    {getPlayerStatus(player)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -115,12 +122,30 @@ export function LobbyRoom({ room, snapshot, currentLobbyPlayer }: LobbyRoomProps
             <Button
               data-testid="ready-toggle"
               variant={currentLobbyPlayer?.isReady ? "secondary" : "secondary"}
-              className={currentLobbyPlayer?.isReady ? "border-accent text-accent-strong" : ""}
+              className={currentLobbyPlayer?.isReady ? "border border-primary text-primary" : ""}
               onClick={() => sendReady(room, !currentLobbyPlayer?.isReady)}
             >
               <Check aria-hidden className="h-4 w-4" />
               {currentLobbyPlayer?.isReady ? tLobby("ready.ready") : tLobby("ready.markReady")}
             </Button>
+          )}
+          {showDebugControls && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  data-testid="add-debug-players"
+                  variant="secondary"
+                  disabled={!canAddDebugPlayers}
+                  onClick={() => sendAddDebugPlayers(room, debugPlayersToAdd)}
+                >
+                  <UserPlus aria-hidden className="h-4 w-4" />
+                  {tLobby("debug.addPlayers")}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {canAddDebugPlayers ? tLobby("debug.addPlayers") : tLobby("debug.addPlayersDisabled")}
+              </TooltipContent>
+            </Tooltip>
           )}
           <Button data-testid="start-game" disabled={!canStart} onClick={() => sendStartGame(room)} className="sm:ml-auto">
             <Play aria-hidden className="h-4 w-4" />

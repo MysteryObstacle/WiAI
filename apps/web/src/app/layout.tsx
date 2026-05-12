@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import { Providers } from "./providers";
+import zhCN from "@/messages/zh-CN.json";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Who is AI",
-  description: "A realtime social deduction game for finding the hidden AI."
+  title: zhCN.app.title,
+  description: zhCN.app.description
 };
 
 export const viewport: Viewport = {
@@ -29,7 +30,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
+    <html
+      lang="zh-CN"
+      className={`dark ${geistSans.variable} ${geistMono.variable} bg-background`}
+    >
       <body>
         <Providers>{children}</Providers>
       </body>

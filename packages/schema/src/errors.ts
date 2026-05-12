@@ -7,6 +7,8 @@ export const errorCodes = [
   "room_not_playing",
   "not_enough_players",
   "players_not_ready",
+  "room_full",
+  "invalid_debug_player_count",
   "invalid_phase",
   "invalid_content",
   "duplicate_answer",

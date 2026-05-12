@@ -1,6 +1,7 @@
 import { err, ok, type Result } from "@wiai/kernel";
 import { assignRoles } from "../roleAssignment";
 import {
+  addLobbyPlayer,
   appendEvent,
   beginPhase,
   beginRound,
@@ -14,6 +15,7 @@ import {
 } from "../state";
 import type {
   Ballot,
+  AddDebugPlayersIntent,
   CancelSubmitAnswerIntent,
   DomainCommand,
   GameErrorCode,
@@ -49,6 +51,8 @@ function execute(state: GameState, command: DomainCommand): CommandResult {
       return handleReady(state, command.actorLobbyPlayerId, command.isReady);
     case "start_game":
       return handleStartGame(state, command);
+    case "add_debug_players":
+      return handleAddDebugPlayers(state, command);
     case "submit_answer":
       return handleSubmitAnswer(state, command);
     case "cancel_submit_answer":
@@ -109,6 +113,44 @@ function handleStartGame(state: GameState, command: StartGameIntent): CommandRes
     }
   });
   beginPhase(state, "answer_prep");
+  return ok([]);
+}
+
+function handleAddDebugPlayers(
+  state: GameState,
+  command: AddDebugPlayersIntent
+): CommandResult {
+  const host = getHostLobbyPlayer(state);
+  if (!host || host.id !== command.actorLobbyPlayerId) {
+    return err("not_host", "Only the host can add debug players");
+  }
+  if (state.status !== "lobby") {
+    return err("room_not_lobby", "Debug players can only be added in lobby");
+  }
+  if (command.count < 1) {
+    return err("invalid_debug_player_count", "Debug player count must be positive");
+  }
+
+  const onlinePlayers = getOnlineLobbyPlayers(state);
+  if (onlinePlayers.length + command.count > state.config.maxPlayers) {
+    return err("room_full", "Debug players would exceed room maximum");
+  }
+
+  const existingDebugCount = state.lobbyPlayers.filter((player) =>
+    player.id.startsWith("lp_debug_")
+  ).length;
+
+  for (let offset = 1; offset <= command.count; offset += 1) {
+    const debugNumber = existingDebugCount + offset;
+    addLobbyPlayer(state, {
+      id: `lp_debug_${debugNumber}`,
+      nickname: `Debug ${debugNumber}`,
+      isHost: false,
+      isReady: true,
+      status: "online"
+    });
+  }
+
   return ok([]);
 }
 

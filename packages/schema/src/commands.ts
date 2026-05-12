@@ -17,6 +17,14 @@ export const startGameCommandSchema = z.object({
   requestId: z.string().trim().min(1).optional()
 });
 
+export const addDebugPlayersCommandSchema = z.object({
+  type: z.literal("add_debug_players"),
+  payload: z.object({
+    count: z.number().int().positive()
+  }),
+  requestId: z.string().trim().min(1).optional()
+});
+
 export const submitAnswerCommandSchema = z.object({
   type: z.literal("submit_answer"),
   payload: z.object({
@@ -63,6 +71,7 @@ export const requestStateCommandSchema = z.object({
 export const browserCommandSchema = z.discriminatedUnion("type", [
   readyCommandSchema,
   startGameCommandSchema,
+  addDebugPlayersCommandSchema,
   submitAnswerCommandSchema,
   cancelSubmitAnswerCommandSchema,
   sendChatCommandSchema,
@@ -89,6 +98,12 @@ export type CommandIntent =
       type: "start_game";
       actorLobbyPlayerId: string;
       requestId?: string;
+    }
+  | {
+      type: "add_debug_players";
+      actorLobbyPlayerId: string;
+      requestId?: string;
+      count: number;
     }
   | {
       type: "submit_answer";
@@ -139,6 +154,12 @@ export function mapBrowserCommandToIntent(
       return withOptionalRequestId({
         type: "start_game",
         actorLobbyPlayerId: requireLobbyActor(actor)
+      }, requestId);
+    case "add_debug_players":
+      return withOptionalRequestId({
+        type: "add_debug_players",
+        actorLobbyPlayerId: requireLobbyActor(actor),
+        count: command.payload.count
       }, requestId);
     case "submit_answer":
       return withOptionalRequestId({

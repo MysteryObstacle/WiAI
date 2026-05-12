@@ -14,7 +14,7 @@
     "build": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@wiai/kernel": "0.0.0"
+    "@wiai/kernel": "file:../kernel"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

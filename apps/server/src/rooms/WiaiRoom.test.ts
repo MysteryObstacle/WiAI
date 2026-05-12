@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createWiaiDatabaseClient } from "@wiai/db";
 import { RoomApplicationService } from "../application/RoomApplicationService";
 import { AgentOrchestrator } from "../application/AgentOrchestrator";
+import { ManagedPlayerOrchestrator } from "../application/ManagedPlayerOrchestrator";
 
 describe("RoomApplicationService", () => {
   it("joins players, starts the game, routes mock Agent suggestions, and persists events", async () => {
@@ -55,6 +56,101 @@ describe("RoomApplicationService", () => {
     );
 
     expect(service.events.listBySession("session_room_1").length).toBeGreaterThan(0);
+    db.close();
+  });
+
+  it("routes managed human players through answers, chat, and ballots", async () => {
+    const db = await createWiaiDatabaseClient();
+    const service = new RoomApplicationService({
+      roomId: "room_managed",
+      roomCode: "DBG123",
+      db
+    });
+
+    service.joinLobby({ lobbyPlayerId: "lp_host", nickname: "Host", isHost: true });
+    expect(
+      service.execute({
+        type: "add_debug_players",
+        actorLobbyPlayerId: "lp_host",
+        count: 2
+      }).ok
+    ).toBe(true);
+    expect(service.execute({ type: "start_game", actorLobbyPlayerId: "lp_host" }).ok).toBe(true);
+
+    const orchestrator = new ManagedPlayerOrchestrator(service, {
+      shouldSendDiscussionMessage: () => true,
+      chooseVoteTarget: (_player, candidates) => candidates[0]!
+    });
+
+    const answerResult = orchestrator.runOnce();
+    expect(answerResult.ok).toBe(true);
+    expect(
+      service.state.answers.filter((answer) => answer.sessionPlayerId.startsWith("sp_lp_debug_"))
+    ).toHaveLength(2);
+
+    for (const player of service.state.sessionPlayers.filter(
+      (candidate) => candidate.controlMode === "player"
+    )) {
+      service.execute({
+        type: "submit_answer",
+        actorSessionPlayerId: player.id,
+        content: `Answer from ${player.displayName}`
+      });
+    }
+    const agent = new AgentOrchestrator(service);
+    await agent.runOnce();
+    expect(service.state.phase).toBe("answer_reveal");
+
+    service.handlePhaseTimeout(service.state.phaseVersion);
+    expect(service.state.phase).toBe("discussion");
+    const chatResult = orchestrator.runOnce();
+    expect(chatResult.ok).toBe(true);
+    expect(
+      service.state.messages.filter((message) => message.sessionPlayerId.startsWith("sp_lp_debug_"))
+    ).toHaveLength(2);
+
+    service.handlePhaseTimeout(service.state.phaseVersion);
+    expect(service.state.phase).toBe("voting");
+    const ballotResult = orchestrator.runOnce();
+    expect(ballotResult.ok).toBe(true);
+    expect(
+      service.state.ballots.filter((ballot) => ballot.actorSessionPlayerId.startsWith("sp_lp_debug_"))
+    ).toHaveLength(2);
+
+    db.close();
+  });
+
+  it("persists phase snapshots for multiple rooms without id collisions", async () => {
+    const db = await createWiaiDatabaseClient();
+
+    for (const roomNumber of [1, 2]) {
+      const service = new RoomApplicationService({
+        roomId: `room_${roomNumber}`,
+        roomCode: `ROOM${roomNumber}`,
+        db
+      });
+      service.joinLobby({ lobbyPlayerId: `lp_host_${roomNumber}`, nickname: "Host", isHost: true });
+      service.joinLobby({ lobbyPlayerId: `lp_ada_${roomNumber}`, nickname: "Ada", isHost: false });
+      service.joinLobby({ lobbyPlayerId: `lp_grace_${roomNumber}`, nickname: "Grace", isHost: false });
+      service.execute({
+        type: "ready",
+        actorLobbyPlayerId: `lp_ada_${roomNumber}`,
+        isReady: true
+      });
+      service.execute({
+        type: "ready",
+        actorLobbyPlayerId: `lp_grace_${roomNumber}`,
+        isReady: true
+      });
+
+      const start = service.execute({
+        type: "start_game",
+        actorLobbyPlayerId: `lp_host_${roomNumber}`
+      });
+
+      expect(start.ok).toBe(true);
+    }
+
     db.close();
   });
 });

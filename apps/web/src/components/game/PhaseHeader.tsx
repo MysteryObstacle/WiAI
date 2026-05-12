@@ -33,7 +33,7 @@ export function PhaseHeader({ snapshot, currentSessionPlayer }: PhaseHeaderProps
   const phaseLabel = t(`phase.${snapshot.phase}`);
 
   return (
-    <Card className="lg:col-span-2 p-5">
+    <Card className="p-5 lg:col-span-3">
       <header className="flex flex-col justify-between gap-4 sm:flex-row">
         <div className="space-y-2">
           <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">

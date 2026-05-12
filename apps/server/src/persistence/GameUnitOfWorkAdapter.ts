@@ -54,7 +54,7 @@ export class GameUnitOfWorkAdapter {
       this.repositories.events.append(toEventRecord(event));
       if (event.type === "phase.started" || event.type === "game.settled") {
         this.repositories.snapshots.save({
-          id: `snapshot_${event.sequence}`,
+          id: `snapshot_${event.id}`,
           sessionId: state.sessionId || event.sessionId,
           roomId: state.roomId,
           phase: state.phase,

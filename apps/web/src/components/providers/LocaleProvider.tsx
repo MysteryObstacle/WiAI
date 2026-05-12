@@ -37,6 +37,10 @@ export function LocaleProvider({ children, initialLocale = "zh-CN", messages }: 
     }
   }, []);
 
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
+
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);
     window.localStorage.setItem(LOCALE_STORAGE_KEY, newLocale);

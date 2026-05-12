@@ -5,7 +5,6 @@ import { Crown } from "lucide-react";
 import { useSettlementReveal } from "@/animations/useSettlementReveal";
 import type { WiaiSnapshot } from "@/game-client/types";
 import { Card, CardContent } from "@/components/ui/card";
-import { PlayerNumber } from "./PlayerNumber";
 
 interface SettlementPanelProps {
   snapshot: WiaiSnapshot;
@@ -14,21 +13,27 @@ interface SettlementPanelProps {
 export function SettlementPanel({ snapshot }: SettlementPanelProps) {
   const ref = useSettlementReveal(snapshot.phaseVersion);
   const t = useTranslations("game.settlement");
+  const tGame = useTranslations("game");
+  const tRole = useTranslations("role");
+  const tWinnerSide = useTranslations("winnerSide");
   const frozen = snapshot.sessionPlayers.find((player) => player.id === snapshot.result.frozenSessionPlayerId);
+  const winnerLabel = snapshot.result.winnerSide ? tWinnerSide(snapshot.result.winnerSide) : tWinnerSide("undecided");
 
   return (
     <Card ref={ref}>
       <CardContent className="space-y-6 pt-5">
-        <div className="flex flex-col items-center gap-2 rounded-lg border border-accent/35 bg-[#0d171b] p-7 text-center">
-          <Crown aria-hidden className="h-8 w-8 text-accent" />
+        <div className="flex flex-col items-center gap-2 rounded-lg border border-primary/35 bg-secondary p-7 text-center">
+          <Crown aria-hidden className="h-8 w-8 text-primary" />
           <span className="text-muted-foreground">{t("winner")}</span>
-          <h2 data-testid="settlement-winner" className="text-3xl font-bold capitalize text-accent-strong sm:text-4xl lg:text-5xl">
-            {snapshot.result.winnerSide || t("undecided")}
+          <h2 data-testid="settlement-winner" className="text-3xl font-bold capitalize text-primary sm:text-4xl lg:text-5xl">
+            {winnerLabel}
           </h2>
           <p className="text-muted-foreground">
             {t("frozenPlayer")}:{" "}
             <strong className="text-foreground">
-              {frozen ? `Player ${frozen.gameNumber} / ${frozen.displayName}` : t("unknown")}
+              {frozen
+                ? `${tGame("player.label", { gameNumber: frozen.gameNumber })} / ${frozen.displayName}`
+                : t("unknown")}
             </strong>
           </p>
         </div>
@@ -38,9 +43,11 @@ export function SettlementPanel({ snapshot }: SettlementPanelProps) {
             .sort((left, right) => left.gameNumber - right.gameNumber)
             .map((player) => (
               <article className="rounded-lg border border-border bg-input p-3.5" key={player.id}>
-                <span className="text-xs text-muted-foreground">Player {player.gameNumber}</span>
+                <span className="text-xs text-muted-foreground">
+                  {tGame("player.label", { gameNumber: player.gameNumber })}
+                </span>
                 <strong className="mt-1 block">{player.displayName}</strong>
-                <p className="mt-1 capitalize text-accent-strong">{player.role || "hidden"}</p>
+                <p className="mt-1 text-primary">{player.role ? tRole(player.role) : tRole("hidden")}</p>
               </article>
             ))}
         </div>
@@ -56,9 +63,15 @@ export function SettlementPanel({ snapshot }: SettlementPanelProps) {
                   className="flex items-center justify-between rounded-lg border border-border bg-input p-3"
                   key={ballot.id}
                 >
-                  <span className="text-muted-foreground">Player {actor?.gameNumber ?? "?"}</span>
+                  <span className="text-muted-foreground">
+                    {actor ? tGame("player.label", { gameNumber: actor.gameNumber }) : tGame("player.unknown")}
+                  </span>
                   <strong className="text-warning">
-                    {ballot.abstain ? t("abstained") : `Player ${target?.gameNumber ?? "?"}`}
+                    {ballot.abstain
+                      ? t("abstained")
+                      : target
+                        ? tGame("player.label", { gameNumber: target.gameNumber })
+                        : tGame("player.unknown")}
                   </strong>
                 </div>
               );

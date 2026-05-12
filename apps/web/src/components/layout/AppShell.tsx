@@ -10,7 +10,7 @@ const AppShell = React.forwardRef<HTMLElement, AppShellProps>(
     <main
       ref={ref}
       className={cn(
-        "min-h-screen p-8",
+        "relative min-h-screen p-8",
         variant === "game" && "p-5",
         className
       )}
@@ -20,7 +20,7 @@ const AppShell = React.forwardRef<HTMLElement, AppShellProps>(
 );
 AppShell.displayName = "AppShell";
 
-interface AppShellContainerProps extends React.HTMLAttributes<HTMLElement> {}
+type AppShellContainerProps = React.HTMLAttributes<HTMLElement>;
 
 const AppShellContainer = React.forwardRef<HTMLElement, AppShellContainerProps>(
   ({ className, ...props }, ref) => (

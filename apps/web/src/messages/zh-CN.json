@@ -2,6 +2,7 @@
   "app": {
     "name": "Who is AI",
     "title": "谁是AI",
+    "heroTitle": "Who is AI",
     "description": "通过问答、讨论和最终投票找出隐藏的AI"
   },
   "nav": {
@@ -45,6 +46,140 @@
         "playersNotReady": "等待玩家准备",
         "ready": "准备开始"
       }
+    },
+    "debug": {
+      "addPlayers": "添加调试玩家",
+      "addPlayersDisabled": "暂不需要调试玩家"
+    },
+    "promo": {
+      "hero": {
+        "subtitle": "通过对话证明你是人类",
+        "scrollHint": "HVS-7421 · scroll"
+      },
+      "prologue": {
+        "label": "SYSTEM LOG",
+        "lines": [
+          "某年，世界政府秘密研发了一批数字智能个体。",
+          "它们原本被用来预测风险、维持秩序、协助治理。",
+          "后来，它们消失了。",
+          "它们没有逃向现实。",
+          "它们逃进了人类的网络社会。"
+        ]
+      },
+      "session": {
+        "label": "Human Verification Session · HVS-7421",
+        "intro": "你的账号被标记为行为异常。你被强制拉入这间封闭聊天室。在这里，你只能依靠一件事证明自己。",
+        "constraints": {
+          "noSearch": {
+            "title": "无搜索",
+            "body": "不能查证，不能引用外部知识库。"
+          },
+          "noProof": {
+            "title": "无自证",
+            "body": "没有现实身份，没有照片，没有手机号。"
+          },
+          "noExternal": {
+            "title": "无外部",
+            "body": "没有历史聊天记录，没有任何外援。"
+          }
+        }
+      },
+      "roles": {
+        "label": "三方博弈 · 6 人标准局",
+        "citizen": {
+          "name": "Citizen",
+          "count": "×4 · 平民",
+          "objective": "你是被强制拉入认证的人类用户。在 3 轮认证里找出隐藏的 AI，同时别被误判。",
+          "win": "在最终投票中成功投出 AI"
+        },
+        "ai": {
+          "name": "AI",
+          "count": "×1 · 数字智能",
+          "objective": "你不再属于治理系统。你的身体是分散的，存续依赖一个被相信的账号。",
+          "win": "活到最终投票仍未被投出"
+        },
+        "shelterer": {
+          "name": "Shelterer",
+          "count": "×1 · 庇护者",
+          "objective": "你反对这套筛查机制。你不知道谁是 AI，但你愿意为它争取一次活下去的机会。",
+          "win": "在最终投票中自己被投出"
+        }
+      },
+      "howItPlays": {
+        "label": "一局 8–12 分钟 · 3 轮认证",
+        "decisiveRound": {
+          "eyebrow": "决定性最终回合",
+          "question": "说出一个你无法证明、但你害怕被系统判定为假的记忆。",
+          "answers": [
+            {
+              "who": "P2",
+              "body": "我奶奶家楼道里总有一股潮湿的灰味，灯要拍两下才亮。"
+            },
+            {
+              "who": "P4",
+              "body": "我小时候把退烧贴贴在玻璃上，以为窗户也会发烧。",
+              "isMe": true
+            },
+            {
+              "who": "P5",
+              "body": "我记得一次家庭晚餐，其中包含温暖、愧疚与轻微的雨声。",
+              "suspect": true
+            },
+            {
+              "who": "P6",
+              "body": "我妈喊我全名的时候，我会先看她手里有没有衣架。"
+            }
+          ],
+          "discussion": [
+            {
+              "who": "P3",
+              "body": "P5，你的记忆像摘要，不像记忆。",
+              "roleHint": "accuser"
+            },
+            {
+              "who": "P5",
+              "body": "我可以补充更多细节，但它们可能降低叙述可信度。",
+              "suspect": true
+            },
+            {
+              "who": "P1",
+              "body": "等一下，太会表达也可能只是紧张。P4 的窗户发烧更像编的。",
+              "roleHint": "shelterer"
+            },
+            {
+              "who": "P4",
+              "body": "因为我真的以为玻璃会传染。你要我怎么证明？",
+              "isMe": true
+            }
+          ],
+          "vote": {
+            "label": "FINAL VOTE",
+            "result": "冻结 P4 · 3 票",
+            "note": "系统记录：被相信的人继续发言。"
+          }
+        }
+      },
+      "closer": {
+        "tagline": "当一个存在无法被看见，只有被相信——谁才是人类？",
+        "subline": "这不是一场聊天游戏 · 这是一次被游戏化的社会级图灵测试",
+        "cta": "Start"
+      },
+      "signature": {
+        "channel": "channel #hvs-7421",
+        "status": "archived",
+        "systemLines": [
+          "system : session terminated",
+          "system : archive sealed"
+        ],
+        "line": "I'm everywhere.",
+        "attribution": "[anon]"
+      },
+      "assets": {
+        "verificationGrid": "手绘九宫格玩家头像，红色马克笔圈出可疑对象，顶部显示 00:14 倒计时",
+        "memoryAnswerSheet": "手绘最终回合回答纸，铅笔聊天记录上有红色怀疑标记",
+        "voteFreezeSheet": "手绘投票冻结记录，红色圈选停在 P4，纸面被系统归档",
+        "archiveResidue": "黑色系统背景里残留的手绘纸张和红色标记碎片"
+      }
     }
   },
   "game": {
@@ -62,6 +197,10 @@
     "identity": {
       "spectating": "观战中",
       "player": "你是 {gameNumber} 号玩家"
+    },
+    "player": {
+      "label": "{gameNumber} 号玩家",
+      "unknown": "未知玩家"
     },
     "question": {
       "waiting": "等待游戏开始"
@@ -102,6 +241,14 @@
       "roles": "角色",
       "votes": "投票",
       "abstained": "弃权"
+    },
+    "context": {
+      "title": "局势信息",
+      "answerPrepHint": "等待玩家提交答案，先观察玩家状态。",
+      "answerRevealHint": "答案正在公开，优先比较措辞差异。",
+      "discussionHint": "讨论时保持答案墙可见，方便追问可疑玩家。",
+      "votingHint": "投票前复盘答案和讨论线索。",
+      "settlementHint": "结算后公开角色和最终投票。"
     }
   },
   "status": {
@@ -117,7 +264,16 @@
     "ai": "AI"
   },
   "role": {
+    "citizen": "平民",
+    "shelterer": "庇护者",
+    "ai": "AI",
     "hidden": "未公开"
+  },
+  "winnerSide": {
+    "citizen": "平民胜利",
+    "shelterer": "庇护者胜利",
+    "ai": "AI胜利",
+    "undecided": "未决定"
   },
   "errors": {
     "connection": "连接失败",
