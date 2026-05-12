@@ -6,6 +6,7 @@ import { getCurrentQuestion } from "@wiai/game";
 import { ZodError } from "zod";
 import { generateRoomCode, getDatabaseFilename } from "../config";
 import { AgentOrchestrator } from "../application/AgentOrchestrator";
+import { ManagedPlayerOrchestrator } from "../application/ManagedPlayerOrchestrator";
 import { parseRoomMessage } from "../application/CommandDtoAdapter";
 import { RoomApplicationService } from "../application/RoomApplicationService";
 import { mapDomainStateToColyseus } from "../state/mappers";
@@ -18,9 +19,11 @@ type UserData = {
 export class WiaiRoom extends Room<WiaiState> {
   private service!: RoomApplicationService;
   private orchestrator!: AgentOrchestrator;
+  private managedOrchestrator!: ManagedPlayerOrchestrator;
   private readonly liveState = new WiaiState();
   private phaseTimer?: { clear: () => void };
   private agentTimer?: { clear: () => void };
+  private managedTimer?: { clear: () => void };
 
   async onCreate(options: { roomCode?: string } = {}): Promise<void> {
     const roomCode = options.roomCode ?? generateRoomCode();
@@ -36,6 +39,7 @@ export class WiaiRoom extends Room<WiaiState> {
       db
     });
     this.orchestrator = new AgentOrchestrator(this.service);
+    this.managedOrchestrator = new ManagedPlayerOrchestrator(this.service);
     this.syncState();
 
     this.onMessage("*", (client, type, payload) => {
@@ -69,6 +73,7 @@ export class WiaiRoom extends Room<WiaiState> {
   onDispose(): void {
     this.phaseTimer?.clear();
     this.agentTimer?.clear();
+    this.managedTimer?.clear();
     this.service.close();
   }
 
@@ -115,6 +120,7 @@ export class WiaiRoom extends Room<WiaiState> {
   private schedulePhaseWork(): void {
     this.phaseTimer?.clear();
     this.agentTimer?.clear();
+    this.managedTimer?.clear();
 
     const phase = this.service.state.phase;
     if (phase !== "lobby" && phase !== "settlement") {
@@ -128,6 +134,15 @@ export class WiaiRoom extends Room<WiaiState> {
     }
 
     if (phase === "answer_prep" || phase === "discussion" || phase === "voting") {
+      this.managedTimer = this.clock.setTimeout(() => {
+        const previousPhaseVersion = this.service.state.phaseVersion;
+        this.managedOrchestrator.runOnce();
+        this.syncState();
+        if (this.service.state.phaseVersion !== previousPhaseVersion) {
+          this.schedulePhaseWork();
+        }
+      }, 125);
+
       this.agentTimer = this.clock.setTimeout(async () => {
         await this.orchestrator.runOnce();
         this.syncState();
