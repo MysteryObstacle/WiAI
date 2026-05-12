@@ -34,6 +34,74 @@ function createLobby() {
 }
 
 describe("CommandBus handlers", () => {
+  it("lets the host add ready debug players in the lobby", () => {
+    const state = createInitialGameState({
+      roomId: "room_1",
+      roomCode: "ABC123",
+      config: {
+        minPlayers: 3,
+        maxPlayers: 6,
+        phaseDurationsMs: {
+          answer_prep: 30_000,
+          answer_reveal: 3_000,
+          discussion: 30_000,
+          voting: 30_000,
+          settlement: 0
+        }
+      }
+    });
+    const bus = new CommandBus();
+    addLobbyPlayer(state, { id: "lp_host", nickname: "Host", isHost: true });
+
+    const result = bus.execute(state, {
+      type: "add_debug_players",
+      actorLobbyPlayerId: "lp_host",
+      count: 2
+    });
+
+    expect(result.ok).toBe(true);
+    expect(state.lobbyPlayers.map((player) => player.id)).toEqual([
+      "lp_host",
+      "lp_debug_1",
+      "lp_debug_2"
+    ]);
+    expect(state.lobbyPlayers.slice(1)).toEqual([
+      expect.objectContaining({
+        nickname: "Debug 1",
+        isHost: false,
+        isReady: true,
+        status: "online"
+      }),
+      expect.objectContaining({
+        nickname: "Debug 2",
+        isHost: false,
+        isReady: true,
+        status: "online"
+      })
+    ]);
+  });
+
+  it("rejects debug player creation from non-hosts and full rooms", () => {
+    const state = createLobby();
+    const bus = new CommandBus();
+
+    expect(
+      bus.execute(state, {
+        type: "add_debug_players",
+        actorLobbyPlayerId: "lp_ada",
+        count: 1
+      })
+    ).toMatchObject({ ok: false, error: { code: "not_host" } });
+
+    expect(
+      bus.execute(state, {
+        type: "add_debug_players",
+        actorLobbyPlayerId: "lp_host",
+        count: 4
+      })
+    ).toMatchObject({ ok: false, error: { code: "room_full" } });
+  });
+
   it("starts a session with one AI, one shelterer, and remaining citizens", () => {
     const state = createLobby();
     const result = new CommandBus().execute(state, {

@@ -148,6 +148,8 @@ export type GameErrorCode =
   | "room_not_playing"
   | "not_enough_players"
   | "players_not_ready"
+  | "room_full"
+  | "invalid_debug_player_count"
   | "invalid_phase"
   | "invalid_content"
   | "duplicate_answer"
@@ -169,6 +171,13 @@ export type StartGameIntent = {
   type: "start_game";
   actorLobbyPlayerId: string;
   requestId?: string;
+};
+
+export type AddDebugPlayersIntent = {
+  type: "add_debug_players";
+  actorLobbyPlayerId: string;
+  requestId?: string;
+  count: number;
 };
 
 export type SubmitAnswerIntent = {
@@ -203,6 +212,7 @@ export type SubmitBallotIntent = {
 export type DomainCommand =
   | ReadyIntent
   | StartGameIntent
+  | AddDebugPlayersIntent
   | SubmitAnswerIntent
   | CancelSubmitAnswerIntent
   | SendChatIntent
