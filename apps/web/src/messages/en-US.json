@@ -249,6 +249,22 @@
       "discussionHint": "Keep the answer wall visible while questioning suspicious players.",
       "votingHint": "Review answers and discussion clues before voting.",
       "settlementHint": "Roles and final votes are public after settlement."
+    },
+    "command": {
+      "room": "Room {roomCode}",
+      "phaseRail": "Phase progress",
+      "submittedCount": "{submitted}/{total} submitted",
+      "focus": "Focus: {player}",
+      "noFocus": "No player focused",
+      "openDossier": "Open dossier",
+      "status": {
+        "current": "You",
+        "submitted": "Submitted",
+        "waiting": "Waiting",
+        "spoke": "Spoke",
+        "voted": "Voted",
+        "inactive": "Inactive"
+      }
     }
   },
   "status": {

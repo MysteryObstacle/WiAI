@@ -249,6 +249,22 @@
       "discussionHint": "讨论时保持答案墙可见，方便追问可疑玩家。",
       "votingHint": "投票前复盘答案和讨论线索。",
       "settlementHint": "结算后公开角色和最终投票。"
+    },
+    "command": {
+      "room": "房间 {roomCode}",
+      "phaseRail": "阶段进度",
+      "submittedCount": "已提交 {submitted}/{total}",
+      "focus": "当前焦点：{player}",
+      "noFocus": "暂无焦点玩家",
+      "openDossier": "打开档案",
+      "status": {
+        "current": "你",
+        "submitted": "已提交",
+        "waiting": "等待中",
+        "spoke": "已发言",
+        "voted": "已投票",
+        "inactive": "离线"
+      }
     }
   },
   "status": {
