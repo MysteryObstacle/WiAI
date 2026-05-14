@@ -103,3 +103,7 @@ export function getDefaultFocusedPlayerId(
 export function getFocusedPlayer(snapshot: WiaiSnapshot, focusedPlayerId: string) {
   return snapshot.sessionPlayers.find((player) => player.id === focusedPlayerId);
 }
+
+export function getPublicPlayerName(player: SessionPlayerSnapshot, fallbackName: string) {
+  return /^mock\s*ai$/i.test(player.displayName.trim()) ? fallbackName : player.displayName;
+}

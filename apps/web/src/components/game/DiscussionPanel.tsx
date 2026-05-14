@@ -12,6 +12,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { EmptyState } from "./EmptyState";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { getPublicPlayerName } from "./gameViewModel";
 
 interface DiscussionPanelProps {
   room: Room;
@@ -29,6 +30,12 @@ export function DiscussionPanel({ room, snapshot, currentSessionPlayer, focusedP
   const focusedAnswer = snapshot.answers.find(
     (answer) => answer.roundIndex === snapshot.roundIndex && answer.sessionPlayerId === focusedPlayerId
   );
+  const focusedPlayerLabel = focusedPlayer
+    ? tGame("player.label", { gameNumber: focusedPlayer.gameNumber })
+    : "";
+  const focusedName = focusedPlayer
+    ? getPublicPlayerName(focusedPlayer, focusedPlayerLabel)
+    : "";
 
   return (
     <Card>
@@ -40,7 +47,9 @@ export function DiscussionPanel({ room, snapshot, currentSessionPlayer, focusedP
         {focusedPlayer ? (
           <article className="rounded-lg border border-border bg-input p-3">
             <span className="text-xs text-muted-foreground">
-              {tGame("player.label", { gameNumber: focusedPlayer.gameNumber })} / {focusedPlayer.displayName}
+              {focusedName === focusedPlayerLabel
+                ? focusedPlayerLabel
+                : `${focusedPlayerLabel} / ${focusedName}`}
             </span>
             <p className="mt-2 text-sm text-muted-foreground">
               {focusedAnswer?.content ?? t("empty")}

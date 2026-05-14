@@ -15,6 +15,7 @@ import {
   getFocusedPlayer,
   getPlayerAnswer,
   getPlayerMessages,
+  getPublicPlayerName,
   getVotesAgainst
 } from "./gameViewModel";
 
@@ -38,6 +39,12 @@ export function InvestigationSheet({
   const messages = focusedPlayer ? getPlayerMessages(snapshot, focusedPlayer.id) : [];
   const votesAgainst = focusedPlayer ? getVotesAgainst(snapshot, focusedPlayer.id) : 0;
   const question = snapshot.questions.find((item) => item.roundIndex === snapshot.roundIndex);
+  const publicName = focusedPlayer
+    ? getPublicPlayerName(
+        focusedPlayer,
+        tGame("player.label", { gameNumber: focusedPlayer.gameNumber })
+      )
+    : "";
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -62,7 +69,7 @@ export function InvestigationSheet({
             <ScrollArea className="mt-3 h-[calc(100vh-12rem)] pr-3">
               <TabsContent value="player">
                 <div className="flex flex-col gap-2">
-                  <strong>{focusedPlayer.displayName}</strong>
+                  <strong>{publicName}</strong>
                   <span className="text-sm text-muted-foreground">
                     {tGame("player.label", { gameNumber: focusedPlayer.gameNumber })}
                   </span>

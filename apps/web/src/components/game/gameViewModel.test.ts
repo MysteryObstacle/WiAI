@@ -3,6 +3,7 @@ import type { SessionPlayerSnapshot, WiaiSnapshot } from "@/game-client/types";
 import {
   getDefaultFocusedPlayerId,
   getPlayerPublicStatus,
+  getPublicPlayerName,
   getSubmittedAnswerCount,
   getVotesAgainst,
   sortedPlayers,
@@ -135,5 +136,14 @@ describe("gameViewModel", () => {
 
     expect(getDefaultFocusedPlayerId(state, state.sessionPlayers[1])).toBe("p2");
     expect(getDefaultFocusedPlayerId(state, undefined)).toBe("p1");
+  });
+
+  it("masks debug AI labels without depending on hidden identity", () => {
+    expect(getPublicPlayerName(player({ displayName: "Mock AI", gameNumber: 4 }), "Player 4")).toBe(
+      "Player 4"
+    );
+    expect(getPublicPlayerName(player({ displayName: "Ada", playerType: "ai" }), "Player 1")).toBe(
+      "Ada"
+    );
   });
 });

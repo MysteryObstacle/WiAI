@@ -5,7 +5,7 @@ import type { SessionPlayerSnapshot, WiaiSnapshot } from "@/game-client/types";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { getPlayerPublicStatus, getVotesAgainst } from "./gameViewModel";
+import { getPlayerPublicStatus, getPublicPlayerName, getVotesAgainst } from "./gameViewModel";
 
 type PlayerStatusCardProps = {
   player: SessionPlayerSnapshot;
@@ -23,8 +23,13 @@ export function PlayerStatusCard({
   onFocus
 }: PlayerStatusCardProps) {
   const tCommand = useTranslations("game.command");
+  const tGame = useTranslations("game");
   const status = getPlayerPublicStatus(snapshot, player, currentSessionPlayer);
   const votesAgainst = getVotesAgainst(snapshot, player.id);
+  const publicName = getPublicPlayerName(
+    player,
+    tGame("player.label", { gameNumber: player.gameNumber })
+  );
 
   return (
     <button
@@ -39,7 +44,7 @@ export function PlayerStatusCard({
         <AvatarFallback>{player.gameNumber}</AvatarFallback>
       </Avatar>
       <span className="min-w-0 flex-1">
-        <strong className="block truncate text-sm">{player.displayName}</strong>
+        <strong className="block truncate text-sm">{publicName}</strong>
         <span className="block truncate text-xs text-muted-foreground">
           {tCommand(`status.${status}`)}
         </span>

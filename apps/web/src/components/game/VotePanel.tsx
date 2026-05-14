@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { PlayerNumber } from "./PlayerNumber";
 import { cn } from "@/lib/utils";
-import { getOwnBallot } from "./gameViewModel";
+import { getOwnBallot, getPublicPlayerName } from "./gameViewModel";
 
 interface VotePanelProps {
   room: Room;
@@ -45,7 +45,11 @@ export function VotePanel({
       <CardContent className="flex flex-col gap-4">
         {selectedPlayer ? (
           <article className="rounded-lg border border-border bg-input p-3 text-sm text-muted-foreground">
-            {t("hint")} #{selectedPlayer.gameNumber} {selectedPlayer.displayName}
+            {t("hint")} #{selectedPlayer.gameNumber}{" "}
+            {getPublicPlayerName(
+              selectedPlayer,
+              tGame("player.label", { gameNumber: selectedPlayer.gameNumber })
+            )}
           </article>
         ) : null}
         <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
@@ -68,7 +72,12 @@ export function VotePanel({
               >
                 <PlayerNumber number={player.gameNumber} />
                 <div>
-                  <strong className="block">{player.displayName}</strong>
+                  <strong className="block">
+                    {getPublicPlayerName(
+                      player,
+                      tGame("player.label", { gameNumber: player.gameNumber })
+                    )}
+                  </strong>
                   <small className="text-xs text-muted-foreground">
                     {tGame("player.label", { gameNumber: player.gameNumber })}
                   </small>
