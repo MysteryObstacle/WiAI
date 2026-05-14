@@ -265,6 +265,19 @@
         "voted": "Voted",
         "inactive": "Inactive"
       }
+    },
+    "dossier": {
+      "title": "Investigation dossier",
+      "description": "Review the focused player's public evidence.",
+      "player": "Player",
+      "answer": "Answer",
+      "discussion": "Discussion",
+      "vote": "Vote",
+      "history": "History",
+      "noPlayer": "No player selected",
+      "noAnswer": "No public answer for this round",
+      "noMessages": "No messages from this player this round",
+      "votesAgainst": "{count} votes against"
     }
   },
   "status": {

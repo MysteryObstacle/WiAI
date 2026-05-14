@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 type CommandConsoleProps = {
@@ -12,13 +11,13 @@ type CommandConsoleProps = {
 export const CommandConsole = React.forwardRef<HTMLDivElement, CommandConsoleProps>(
   function CommandConsole({ children, className }, ref) {
     return (
-      <Card
+      <div
         ref={ref}
         data-testid="command-console"
-        className={cn("min-h-[520px] overflow-hidden", className)}
+        className={cn("min-w-0", className)}
       >
-        <CardContent className="flex h-full flex-col gap-4 p-5">{children}</CardContent>
-      </Card>
+        {children}
+      </div>
     );
   }
 );

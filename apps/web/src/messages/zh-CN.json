@@ -265,6 +265,19 @@
         "voted": "已投票",
         "inactive": "离线"
       }
+    },
+    "dossier": {
+      "title": "调查档案",
+      "description": "查看当前焦点玩家的公开证据。",
+      "player": "玩家",
+      "answer": "答案",
+      "discussion": "发言",
+      "vote": "投票",
+      "history": "历史",
+      "noPlayer": "暂无选中玩家",
+      "noAnswer": "本轮暂无公开答案",
+      "noMessages": "该玩家本轮暂无发言",
+      "votesAgainst": "当前被投 {count} 票"
     }
   },
   "status": {

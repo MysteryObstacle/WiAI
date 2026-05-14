@@ -3,29 +3,38 @@
 import { useTranslations } from "next-intl";
 import type { Room } from "colyseus.js";
 import { Vote } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { sendBallot } from "@/game-client/roomCommands";
 import type { SessionPlayerSnapshot, WiaiSnapshot } from "@/game-client/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { PlayerNumber } from "./PlayerNumber";
 import { cn } from "@/lib/utils";
+import { getOwnBallot } from "./gameViewModel";
 
 interface VotePanelProps {
   room: Room;
   snapshot: WiaiSnapshot;
   currentSessionPlayer: SessionPlayerSnapshot | undefined;
+  focusedPlayerId: string;
+  onFocusPlayer: (playerId: string) => void;
 }
 
-export function VotePanel({ room, snapshot, currentSessionPlayer }: VotePanelProps) {
+export function VotePanel({
+  room,
+  snapshot,
+  currentSessionPlayer,
+  focusedPlayerId,
+  onFocusPlayer
+}: VotePanelProps) {
   const t = useTranslations("game.vote");
-  const tPlayerType = useTranslations("playerType");
+  const tGame = useTranslations("game");
   const ballotType = snapshot.roundIndex === 2 ? "decision" : "suspicion";
-  const ownBallot = useMemo(
-    () => snapshot.ballots.find((ballot) => ballot.actorSessionPlayerId === currentSessionPlayer?.id),
-    [currentSessionPlayer?.id, snapshot.ballots]
-  );
+  const ownBallot = getOwnBallot(snapshot, currentSessionPlayer);
   const [targetGameNumber, setTargetGameNumber] = useState<number | null>(null);
+  const selectedPlayer = snapshot.sessionPlayers.find((player) =>
+    targetGameNumber === null ? player.id === focusedPlayerId : player.gameNumber === targetGameNumber
+  );
 
   return (
     <Card>
@@ -33,7 +42,12 @@ export function VotePanel({ room, snapshot, currentSessionPlayer }: VotePanelPro
         <CardTitle>{ballotType === "decision" ? t("decisionTitle") : t("suspicionTitle")}</CardTitle>
         <CardDescription>{ownBallot ? t("recorded") : t("hint")}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="flex flex-col gap-4">
+        {selectedPlayer ? (
+          <article className="rounded-lg border border-border bg-input p-3 text-sm text-muted-foreground">
+            {t("hint")} #{selectedPlayer.gameNumber} {selectedPlayer.displayName}
+          </article>
+        ) : null}
         <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
           {snapshot.sessionPlayers
             .filter((player) => player.isActive && player.id !== currentSessionPlayer?.id)
@@ -47,13 +61,16 @@ export function VotePanel({ room, snapshot, currentSessionPlayer }: VotePanelPro
                 key={player.id}
                 type="button"
                 disabled={Boolean(ownBallot)}
-                onClick={() => setTargetGameNumber(player.gameNumber)}
+                onClick={() => {
+                  setTargetGameNumber(player.gameNumber);
+                  onFocusPlayer(player.id);
+                }}
               >
                 <PlayerNumber number={player.gameNumber} />
                 <div>
                   <strong className="block">{player.displayName}</strong>
                   <small className="text-xs text-muted-foreground">
-                    {player.playerType === "ai" ? tPlayerType("ai") : tPlayerType("human")}
+                    {tGame("player.label", { gameNumber: player.gameNumber })}
                   </small>
                 </div>
               </button>
@@ -69,7 +86,7 @@ export function VotePanel({ room, snapshot, currentSessionPlayer }: VotePanelPro
               }
             }}
           >
-            <Vote aria-hidden className="h-4 w-4" />
+            <Vote aria-hidden data-icon="inline-start" />
             {t("cast")}
           </Button>
           {ballotType === "suspicion" && (

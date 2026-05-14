@@ -17,13 +17,18 @@ interface DiscussionPanelProps {
   room: Room;
   snapshot: WiaiSnapshot;
   currentSessionPlayer: SessionPlayerSnapshot | undefined;
+  focusedPlayerId: string;
 }
 
-export function DiscussionPanel({ room, snapshot, currentSessionPlayer }: DiscussionPanelProps) {
+export function DiscussionPanel({ room, snapshot, currentSessionPlayer, focusedPlayerId }: DiscussionPanelProps) {
   const t = useTranslations("game.discussion");
   const tGame = useTranslations("game");
   const tA11y = useTranslations("a11y");
   const [content, setContent] = useState("");
+  const focusedPlayer = snapshot.sessionPlayers.find((player) => player.id === focusedPlayerId);
+  const focusedAnswer = snapshot.answers.find(
+    (answer) => answer.roundIndex === snapshot.roundIndex && answer.sessionPlayerId === focusedPlayerId
+  );
 
   return (
     <Card>
@@ -31,12 +36,22 @@ export function DiscussionPanel({ room, snapshot, currentSessionPlayer }: Discus
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("hint")}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="flex flex-col gap-3">
+        {focusedPlayer ? (
+          <article className="rounded-lg border border-border bg-input p-3">
+            <span className="text-xs text-muted-foreground">
+              {tGame("player.label", { gameNumber: focusedPlayer.gameNumber })} / {focusedPlayer.displayName}
+            </span>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {focusedAnswer?.content ?? t("empty")}
+            </p>
+          </article>
+        ) : null}
         <ScrollArea className="h-[420px] pr-4">
           {snapshot.messages.length === 0 ? (
             <EmptyState message={t("empty")} />
           ) : (
-            <div className="space-y-2.5">
+            <div className="flex flex-col gap-2.5">
               {snapshot.messages.map((message) => {
                 const player = snapshot.sessionPlayers.find((item) => item.id === message.sessionPlayerId);
                 return (
@@ -74,7 +89,7 @@ export function DiscussionPanel({ room, snapshot, currentSessionPlayer }: Discus
               setContent("");
             }}
           >
-            <Send aria-hidden className="h-4 w-4" />
+            <Send aria-hidden data-icon="inline-start" />
           </Button>
         </div>
       </CardContent>
