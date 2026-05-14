@@ -19,7 +19,7 @@ export function PlayerRoster({ players, currentSessionPlayer }: PlayerRosterProp
   const tRole = useTranslations("role");
 
   return (
-    <Card asChild>
+    <Card>
       <aside aria-label={tA11y("players")}>
         <CardHeader>
           <CardTitle>{tA11y("players")}</CardTitle>
