@@ -7,15 +7,27 @@ export function usePhaseTransition(phaseVersion: number) {
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!ref.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const target = ref.current;
+    if (!target || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
 
-    gsap.fromTo(
-      ref.current,
-      { y: 10, opacity: 0.92 },
-      { y: 0, opacity: 1, duration: 0.35, ease: "power2.out" }
-    );
+    const context = gsap.context(() => {
+      gsap.fromTo(
+        target,
+        { y: 8, autoAlpha: 0.94 },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.24,
+          ease: "power2.out",
+          overwrite: "auto",
+          clearProps: "transform,opacity,visibility"
+        }
+      );
+    }, target);
+
+    return () => context.revert();
   }, [phaseVersion]);
 
   return ref;
