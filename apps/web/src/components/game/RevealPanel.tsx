@@ -28,6 +28,23 @@ export function AnswerList({
       <div className="flex flex-col gap-2.5" ref={listRef}>
         {snapshot.answers.map((answer) => {
           const player = snapshot.sessionPlayers.find((item) => item.id === answer.sessionPlayerId);
+          const answerContent = (
+            <>
+              <span className="text-xs text-muted-foreground">
+                {player ? tGame("player.label", { gameNumber: player.gameNumber }) : tGame("player.unknown")}
+              </span>
+              <p className="mt-1.5 text-foreground">{answer.content || tAnswer("submitted")}</p>
+            </>
+          );
+
+          if (!onFocusPlayer) {
+            return (
+              <article className="rounded-lg border border-border bg-input p-3.5" key={answer.id}>
+                {answerContent}
+              </article>
+            );
+          }
+
           return (
             <button
               className={cn(
@@ -36,12 +53,9 @@ export function AnswerList({
               )}
               key={answer.id}
               type="button"
-              onClick={() => onFocusPlayer?.(answer.sessionPlayerId)}
+              onClick={() => onFocusPlayer(answer.sessionPlayerId)}
             >
-              <span className="text-xs text-muted-foreground">
-                {player ? tGame("player.label", { gameNumber: player.gameNumber }) : tGame("player.unknown")}
-              </span>
-              <p className="mt-1.5 text-foreground">{answer.content || tAnswer("submitted")}</p>
+              {answerContent}
             </button>
           );
         })}

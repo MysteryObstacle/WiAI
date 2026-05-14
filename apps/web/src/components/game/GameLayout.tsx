@@ -8,9 +8,9 @@ import { ActionBar } from "./ActionBar";
 import { AnswerPanel } from "./AnswerPanel";
 import { CommandConsole } from "./CommandConsole";
 import { DiscussionPanel } from "./DiscussionPanel";
-import { getDefaultFocusedPlayerId, splitPlayerColumns } from "./gameViewModel";
+import { getDefaultFocusedPlayerId, sortedPlayers, splitPlayerColumns } from "./gameViewModel";
 import { InvestigationSheet } from "./InvestigationSheet";
-import { PlayerColumn } from "./PlayerColumns";
+import { PlayerColumn, PlayerRail } from "./PlayerColumns";
 import { RevealPanel } from "./RevealPanel";
 import { SettlementPanel } from "./SettlementPanel";
 import { TopStatusBar } from "./TopStatusBar";
@@ -38,6 +38,10 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
 
   const playerColumns = useMemo(
     () => splitPlayerColumns(snapshot.sessionPlayers),
+    [snapshot.sessionPlayers]
+  );
+  const compactPlayers = useMemo(
+    () => sortedPlayers(snapshot.sessionPlayers),
     [snapshot.sessionPlayers]
   );
 
@@ -83,6 +87,17 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
     <div className="flex flex-col gap-4">
       <TopStatusBar snapshot={snapshot} currentSessionPlayer={currentSessionPlayer} />
 
+      <div className="xl:hidden">
+        <PlayerRail
+          currentSessionPlayer={currentSessionPlayer}
+          focusedPlayerId={focusedPlayerId}
+          onFocusPlayer={focusPlayer}
+          players={compactPlayers}
+          snapshot={snapshot}
+          testId="player-compact-rail"
+        />
+      </div>
+
       <div className="grid gap-4 xl:grid-cols-[260px_minmax(0,1fr)_260px]">
         <aside className="hidden xl:block">
           <PlayerColumn
@@ -91,6 +106,7 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
             onFocusPlayer={focusPlayer}
             players={playerColumns.left}
             snapshot={snapshot}
+            testId="player-column-left"
           />
         </aside>
         <CommandConsole ref={transitionRef}>{phaseContent}</CommandConsole>
@@ -101,6 +117,7 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
             onFocusPlayer={focusPlayer}
             players={playerColumns.right}
             snapshot={snapshot}
+            testId="player-column-right"
           />
         </aside>
       </div>
