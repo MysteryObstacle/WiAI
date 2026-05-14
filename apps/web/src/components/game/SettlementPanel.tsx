@@ -21,9 +21,9 @@ export function SettlementPanel({ snapshot }: SettlementPanelProps) {
 
   return (
     <Card ref={ref}>
-      <CardContent className="space-y-6 pt-5">
-        <div className="flex flex-col items-center gap-2 rounded-lg border border-primary/35 bg-secondary p-7 text-center">
-          <Crown aria-hidden className="h-8 w-8 text-primary" />
+      <CardContent className="flex flex-col gap-6 pt-5">
+        <div className="settlement-hero flex flex-col items-center gap-2 rounded-lg border border-primary/35 bg-secondary p-7 text-center">
+          <Crown aria-hidden className="size-8 text-primary" />
           <span className="text-muted-foreground">{t("winner")}</span>
           <h2 data-testid="settlement-winner" className="text-3xl font-bold capitalize text-primary sm:text-4xl lg:text-5xl">
             {winnerLabel}
@@ -42,7 +42,7 @@ export function SettlementPanel({ snapshot }: SettlementPanelProps) {
           {snapshot.sessionPlayers
             .sort((left, right) => left.gameNumber - right.gameNumber)
             .map((player) => (
-              <article className="rounded-lg border border-border bg-input p-3.5" key={player.id}>
+              <article className="role-card rounded-lg border border-border bg-input p-3.5" key={player.id}>
                 <span className="text-xs text-muted-foreground">
                   {tGame("player.label", { gameNumber: player.gameNumber })}
                 </span>
@@ -52,7 +52,7 @@ export function SettlementPanel({ snapshot }: SettlementPanelProps) {
             ))}
         </div>
 
-        <div className="space-y-2.5">
+        <div className="flex flex-col gap-2.5">
           {snapshot.ballots
             .filter((ballot) => ballot.ballotType === "decision")
             .map((ballot) => {
@@ -60,7 +60,7 @@ export function SettlementPanel({ snapshot }: SettlementPanelProps) {
               const target = snapshot.sessionPlayers.find((player) => player.id === ballot.targetSessionPlayerId);
               return (
                 <div
-                  className="flex items-center justify-between rounded-lg border border-border bg-input p-3"
+                  className="vote-row flex items-center justify-between rounded-lg border border-border bg-input p-3"
                   key={ballot.id}
                 >
                   <span className="text-muted-foreground">
