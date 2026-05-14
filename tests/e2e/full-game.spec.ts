@@ -22,6 +22,9 @@ test("one host browser completes a full Who is AI game with debug players", asyn
 
   await expect(page.getByTestId("start-game")).toBeEnabled();
   await page.getByTestId("start-game").click();
+  await expect(page.getByTestId("game-status-bar")).toBeVisible();
+  await expect(page.getByTestId("command-console")).toBeVisible();
+  await expect(page.getByTestId("game-action-bar")).toBeVisible();
 
   for (let round = 0; round < 3; round += 1) {
     await answerRound(page, `Host round ${round}`);
