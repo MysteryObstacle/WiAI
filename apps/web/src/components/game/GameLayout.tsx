@@ -4,7 +4,6 @@ import type { Room } from "colyseus.js";
 import { useEffect, useMemo, useState } from "react";
 import { usePhaseTransition } from "@/animations/usePhaseTransition";
 import type { SessionPlayerSnapshot, WiaiSnapshot } from "@/game-client/types";
-import { ActionBar } from "./ActionBar";
 import { AnswerPanel } from "./AnswerPanel";
 import { CommandConsole } from "./CommandConsole";
 import { DiscussionPanel } from "./DiscussionPanel";
@@ -84,7 +83,7 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex min-h-[calc(100vh-2.5rem)] flex-col gap-3">
       <TopStatusBar snapshot={snapshot} currentSessionPlayer={currentSessionPlayer} />
 
       <div className="xl:hidden">
@@ -98,7 +97,10 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
         />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[260px_minmax(0,1fr)_260px]">
+      <div
+        className="grid min-h-[430px] items-start gap-4 xl:grid-cols-[260px_minmax(0,1fr)_260px]"
+        data-testid="game-command-shell"
+      >
         <aside className="hidden xl:block">
           <PlayerColumn
             currentSessionPlayer={currentSessionPlayer}
@@ -109,7 +111,9 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
             testId="player-column-left"
           />
         </aside>
-        <CommandConsole ref={transitionRef}>{phaseContent}</CommandConsole>
+        <CommandConsole ref={transitionRef} className="min-h-[360px]">
+          {phaseContent}
+        </CommandConsole>
         <aside className="hidden xl:block">
           <PlayerColumn
             currentSessionPlayer={currentSessionPlayer}
@@ -121,12 +125,6 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
           />
         </aside>
       </div>
-
-      <ActionBar
-        focusedPlayerId={focusedPlayerId}
-        onOpenDossier={() => setIsDossierOpen(true)}
-        snapshot={snapshot}
-      />
 
       <InvestigationSheet
         focusedPlayerId={focusedPlayerId}

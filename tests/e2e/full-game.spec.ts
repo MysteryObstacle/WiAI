@@ -9,10 +9,12 @@ const phaseText = {
 test("one host browser completes a full Who is AI game with debug players", async ({ page }) => {
   await startGameWithDebugPlayers(page, "Host");
   await expect(page.getByTestId("game-status-bar")).toBeVisible();
+  await expect(page.getByTestId("game-command-shell")).toBeVisible();
   await expect(page.getByTestId("command-console")).toBeVisible();
-  await expect(page.getByTestId("game-action-bar")).toBeVisible();
+  await expect(page.getByTestId("game-action-bar")).toHaveCount(0);
   await expect(page.getByTestId("player-column-left")).toBeVisible();
   await expect(page.getByTestId("player-column-right")).toBeVisible();
+  await expectStableCommandShell(page);
 
   for (let round = 0; round < 3; round += 1) {
     await answerRound(page, `Host round ${round}`);
@@ -38,9 +40,11 @@ test("keeps a compact player rail available on narrower game viewports", async (
   await startGameWithDebugPlayers(page, "Narrow");
 
   await expect(page.getByTestId("game-status-bar")).toBeVisible();
+  await expect(page.getByTestId("game-command-shell")).toBeVisible();
   await expect(page.getByTestId("command-console")).toBeVisible();
   await expect(page.getByTestId("player-compact-rail")).toBeVisible();
   await expect(page.getByTestId("player-compact-rail")).toContainText("Narrow");
+  await expectStableCommandShell(page);
 });
 
 async function startGameWithDebugPlayers(page: Page, nickname: string) {
@@ -71,4 +75,9 @@ async function voteForAi(page: Page) {
   await expect(page.getByTestId("phase-name")).toHaveText(phaseText.voting, { timeout: 10_000 });
   await page.getByTestId("vote-option-4").click();
   await page.getByTestId("cast-vote").click();
+}
+
+async function expectStableCommandShell(page: Page) {
+  const shellBox = await page.getByTestId("game-command-shell").boundingBox();
+  expect(shellBox?.height ?? 0).toBeGreaterThanOrEqual(430);
 }

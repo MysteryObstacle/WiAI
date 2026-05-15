@@ -254,9 +254,6 @@
       "room": "房间 {roomCode}",
       "phaseRail": "阶段进度",
       "submittedCount": "已提交 {submitted}/{total}",
-      "focus": "当前焦点：{player}",
-      "noFocus": "暂无焦点玩家",
-      "openDossier": "打开档案",
       "status": {
         "current": "你",
         "submitted": "已提交",

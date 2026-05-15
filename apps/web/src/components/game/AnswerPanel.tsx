@@ -30,7 +30,7 @@ export function AnswerPanel({ room, snapshot, currentSessionPlayer }: AnswerPane
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{ownAnswer ? t("lockedHint") : t("inputHint")}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="flex flex-col gap-4">
         <Textarea
           data-testid="answer-input"
           value={ownAnswer ? t("submitted") : content}
@@ -47,12 +47,12 @@ export function AnswerPanel({ room, snapshot, currentSessionPlayer }: AnswerPane
               setContent("");
             }}
           >
-            <Send aria-hidden className="h-4 w-4" />
+            <Send aria-hidden data-icon="inline-start" />
             {t("submit")}
           </Button>
           {ownAnswer && (
             <Button variant="secondary" onClick={() => sendCancelAnswer(room)}>
-              <X aria-hidden className="h-4 w-4" />
+              <X aria-hidden data-icon="inline-start" />
               {t("cancel")}
             </Button>
           )}

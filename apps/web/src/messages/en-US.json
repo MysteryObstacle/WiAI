@@ -254,9 +254,6 @@
       "room": "Room {roomCode}",
       "phaseRail": "Phase progress",
       "submittedCount": "{submitted}/{total} submitted",
-      "focus": "Focus: {player}",
-      "noFocus": "No player focused",
-      "openDossier": "Open dossier",
       "status": {
         "current": "You",
         "submitted": "Submitted",

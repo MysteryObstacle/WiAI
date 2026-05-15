@@ -15,14 +15,13 @@ export function usePhaseTransition(phaseVersion: number) {
     const context = gsap.context(() => {
       gsap.fromTo(
         target,
-        { y: 8, autoAlpha: 0.94 },
+        { autoAlpha: 0.96 },
         {
-          y: 0,
           autoAlpha: 1,
-          duration: 0.24,
-          ease: "power2.out",
+          duration: 0.18,
+          ease: "power1.out",
           overwrite: "auto",
-          clearProps: "transform,opacity,visibility"
+          clearProps: "opacity,visibility"
         }
       );
     }, target);
