@@ -12,8 +12,12 @@ test("one host browser completes a full Who is AI game with debug players", asyn
   await expect(page.getByTestId("game-command-shell")).toBeVisible();
   await expect(page.getByTestId("command-console")).toBeVisible();
   await expect(page.getByTestId("game-action-bar")).toHaveCount(0);
+  await expect(page.getByTestId("player-left-panel")).toBeVisible();
   await expect(page.getByTestId("player-column-left")).toBeVisible();
-  await expect(page.getByTestId("player-column-right")).toBeVisible();
+  await expect(page.getByTestId("player-column-left")).toContainText("Host");
+  await expect(page.getByTestId("player-column-left")).toContainText("Debug 2");
+  await expect(page.getByTestId("player-column-right")).toHaveCount(0);
+  await expect(page.getByTestId("investigation-panel")).toBeVisible();
   await expectStableCommandShell(page);
 
   for (let round = 0; round < 3; round += 1) {
@@ -44,6 +48,7 @@ test("keeps a compact player rail available on narrower game viewports", async (
   await expect(page.getByTestId("command-console")).toBeVisible();
   await expect(page.getByTestId("player-compact-rail")).toBeVisible();
   await expect(page.getByTestId("player-compact-rail")).toContainText("Narrow");
+  await expect(page.getByTestId("investigation-panel")).toBeVisible();
   await expectStableCommandShell(page);
 });
 

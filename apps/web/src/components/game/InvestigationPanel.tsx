@@ -2,14 +2,14 @@
 
 import { useTranslations } from "next-intl";
 import type { WiaiSnapshot } from "@/game-client/types";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle
-} from "@/components/ui/sheet";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getFocusedPlayer,
@@ -19,19 +19,15 @@ import {
   getVotesAgainst
 } from "./gameViewModel";
 
-type InvestigationSheetProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+type InvestigationPanelProps = {
   snapshot: WiaiSnapshot;
   focusedPlayerId: string;
 };
 
-export function InvestigationSheet({
-  open,
-  onOpenChange,
+export function InvestigationPanel({
   snapshot,
   focusedPlayerId
-}: InvestigationSheetProps) {
+}: InvestigationPanelProps) {
   const t = useTranslations("game.dossier");
   const tGame = useTranslations("game");
   const focusedPlayer = getFocusedPlayer(snapshot, focusedPlayerId);
@@ -47,26 +43,28 @@ export function InvestigationSheet({
     : "";
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>{t("title")}</SheetTitle>
-          <SheetDescription>{t("description")}</SheetDescription>
-        </SheetHeader>
+    <Card data-testid="investigation-panel" className="h-full min-h-0">
+      <CardHeader>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
+      </CardHeader>
 
-        {!focusedPlayer ? (
-          <p className="p-4 text-sm text-muted-foreground">{t("noPlayer")}</p>
-        ) : (
-          <Tabs defaultValue="player" className="min-h-0 px-4 pb-4">
-            <TabsList>
-              <TabsTrigger value="player">{t("player")}</TabsTrigger>
-              <TabsTrigger value="answer">{t("answer")}</TabsTrigger>
-              <TabsTrigger value="discussion">{t("discussion")}</TabsTrigger>
-              <TabsTrigger value="vote">{t("vote")}</TabsTrigger>
-              <TabsTrigger value="history">{t("history")}</TabsTrigger>
+      {!focusedPlayer ? (
+        <CardContent>
+          <p className="text-sm text-muted-foreground">{t("noPlayer")}</p>
+        </CardContent>
+      ) : (
+        <CardContent className="flex min-h-0 flex-1 flex-col">
+          <Tabs defaultValue="player" className="flex min-h-0 flex-1 flex-col">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger className="text-xs" value="player">{t("player")}</TabsTrigger>
+              <TabsTrigger className="text-xs" value="answer">{t("answer")}</TabsTrigger>
+              <TabsTrigger className="text-xs" value="discussion">{t("discussion")}</TabsTrigger>
+              <TabsTrigger className="text-xs" value="vote">{t("vote")}</TabsTrigger>
+              <TabsTrigger className="text-xs" value="history">{t("history")}</TabsTrigger>
             </TabsList>
 
-            <ScrollArea className="mt-3 h-[calc(100vh-12rem)] pr-3">
+            <ScrollArea className="mt-3 min-h-0 flex-1 pr-3">
               <TabsContent value="player">
                 <div className="flex flex-col gap-2">
                   <strong>{publicName}</strong>
@@ -109,8 +107,8 @@ export function InvestigationSheet({
               </TabsContent>
             </ScrollArea>
           </Tabs>
-        )}
-      </SheetContent>
-    </Sheet>
+        </CardContent>
+      )}
+    </Card>
   );
 }

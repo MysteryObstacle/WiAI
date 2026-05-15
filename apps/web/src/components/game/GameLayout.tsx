@@ -4,11 +4,12 @@ import type { Room } from "colyseus.js";
 import { useEffect, useMemo, useState } from "react";
 import { usePhaseTransition } from "@/animations/usePhaseTransition";
 import type { SessionPlayerSnapshot, WiaiSnapshot } from "@/game-client/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { AnswerPanel } from "./AnswerPanel";
 import { CommandConsole } from "./CommandConsole";
 import { DiscussionPanel } from "./DiscussionPanel";
-import { getDefaultFocusedPlayerId, sortedPlayers, splitPlayerColumns } from "./gameViewModel";
-import { InvestigationSheet } from "./InvestigationSheet";
+import { getDefaultFocusedPlayerId, sortedPlayers } from "./gameViewModel";
+import { InvestigationPanel } from "./InvestigationPanel";
 import { PlayerColumn, PlayerRail } from "./PlayerColumns";
 import { RevealPanel } from "./RevealPanel";
 import { SettlementPanel } from "./SettlementPanel";
@@ -26,7 +27,6 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
   const [focusedPlayerId, setFocusedPlayerId] = useState(() =>
     getDefaultFocusedPlayerId(snapshot, currentSessionPlayer)
   );
-  const [isDossierOpen, setIsDossierOpen] = useState(false);
 
   useEffect(() => {
     const exists = snapshot.sessionPlayers.some((player) => player.id === focusedPlayerId);
@@ -35,10 +35,6 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
     }
   }, [currentSessionPlayer, focusedPlayerId, snapshot]);
 
-  const playerColumns = useMemo(
-    () => splitPlayerColumns(snapshot.sessionPlayers),
-    [snapshot.sessionPlayers]
-  );
   const compactPlayers = useMemo(
     () => sortedPlayers(snapshot.sessionPlayers),
     [snapshot.sessionPlayers]
@@ -46,7 +42,6 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
 
   const focusPlayer = (playerId: string) => {
     setFocusedPlayerId(playerId);
-    setIsDossierOpen(true);
   };
 
   const phaseContent = (
@@ -83,7 +78,7 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
   );
 
   return (
-    <div className="flex min-h-[calc(100vh-2.5rem)] flex-col gap-3">
+    <div className="flex h-[calc(100vh-2.5rem)] min-h-0 flex-col gap-3">
       <TopStatusBar snapshot={snapshot} currentSessionPlayer={currentSessionPlayer} />
 
       <div className="xl:hidden">
@@ -98,40 +93,31 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
       </div>
 
       <div
-        className="grid min-h-[430px] items-start gap-4 xl:grid-cols-[260px_minmax(0,1fr)_260px]"
+        className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[260px_minmax(0,1fr)_320px]"
         data-testid="game-command-shell"
       >
-        <aside className="hidden xl:block">
-          <PlayerColumn
-            currentSessionPlayer={currentSessionPlayer}
-            focusedPlayerId={focusedPlayerId}
-            onFocusPlayer={focusPlayer}
-            players={playerColumns.left}
-            snapshot={snapshot}
-            testId="player-column-left"
-          />
+        <aside className="hidden min-h-0 lg:block" data-testid="player-left-panel">
+          <ScrollArea className="h-full pr-2">
+            <PlayerColumn
+              currentSessionPlayer={currentSessionPlayer}
+              focusedPlayerId={focusedPlayerId}
+              onFocusPlayer={focusPlayer}
+              players={compactPlayers}
+              snapshot={snapshot}
+              testId="player-column-left"
+            />
+          </ScrollArea>
         </aside>
-        <CommandConsole ref={transitionRef} className="min-h-[360px]">
+        <CommandConsole ref={transitionRef} className="h-full min-h-0 [&>[data-slot=card]]:h-full">
           {phaseContent}
         </CommandConsole>
-        <aside className="hidden xl:block">
-          <PlayerColumn
-            currentSessionPlayer={currentSessionPlayer}
+        <aside className="min-h-0">
+          <InvestigationPanel
             focusedPlayerId={focusedPlayerId}
-            onFocusPlayer={focusPlayer}
-            players={playerColumns.right}
             snapshot={snapshot}
-            testId="player-column-right"
           />
         </aside>
       </div>
-
-      <InvestigationSheet
-        focusedPlayerId={focusedPlayerId}
-        onOpenChange={setIsDossierOpen}
-        open={isDossierOpen}
-        snapshot={snapshot}
-      />
     </div>
   );
 }
