@@ -211,19 +211,51 @@
       "inputHint": "Keep it specific enough to sound human",
       "placeholder": "Write a concise answer...",
       "submit": "Submit",
-      "cancel": "Cancel",
-      "submitted": "Submitted"
+      "cancel": "Edit answer",
+      "submitted": "Submitted",
+      "roundTheme": "Round prompt",
+      "submittedCount": "{submitted}/{total} submitted",
+      "waitingQuestion": "Waiting for the next prompt",
+      "referenceTitle": "Reference dimensions",
+      "reference": {
+        "concrete": "Concrete scene",
+        "tradeoff": "Trade-off",
+        "emotion": "Emotion",
+        "detail": "Detail"
+      },
+      "answerPaper": "Your answer"
     },
     "reveal": {
       "title": "Answers revealed",
-      "hint": "Read the wording before discussion opens"
+      "hint": "Read each answer and mark suspicious wording.",
+      "answerWall": "Answer wall",
+      "answerNumber": "Answer {number}",
+      "answerMeta": "{count} chars",
+      "currentViewing": "Viewing {player}",
+      "previous": "Previous",
+      "next": "Next",
+      "tags": {
+        "template": "Template-like",
+        "thinDetail": "Thin detail",
+        "tooRational": "Too rational",
+        "real": "Feels real"
+      }
     },
     "discussion": {
       "title": "Discussion",
       "hint": "Challenge vague answers and note suspicious patterns",
       "empty": "No messages yet",
       "placeholder": "Ask a pointed question...",
-      "send": "Send"
+      "send": "Send",
+      "currentFocus": "Current focus",
+      "mentioned": "Mentioned {count}",
+      "votes": "{count} votes",
+      "quick": {
+        "agree": "Agree",
+        "challenge": "Challenge",
+        "ask": "Ask why",
+        "example": "Ask example"
+      }
     },
     "vote": {
       "suspicionTitle": "Suspicion vote",
@@ -231,7 +263,13 @@
       "recorded": "Vote recorded",
       "hint": "Choose one active player. Self-votes are blocked",
       "cast": "Cast vote",
-      "abstain": "Abstain"
+      "castTarget": "Vote Player {gameNumber}",
+      "abstain": "Abstain",
+      "voteCount": "{count} votes",
+      "currentSelection": "Current selection",
+      "notSelected": "No target yet",
+      "noTarget": "No target",
+      "selectionHint": "Select a node first, then confirm. Confirmed votes cannot be changed."
     },
     "settlement": {
       "winner": "Winner",
@@ -249,6 +287,60 @@
       "discussionHint": "Keep the answer wall visible while questioning suspicious players.",
       "votingHint": "Review answers and discussion clues before voting.",
       "settlementHint": "Roles and final votes are public after settlement."
+    },
+    "command": {
+      "room": "Room {roomCode}",
+      "phaseRail": "Phase progress",
+      "submittedCount": "{submitted}/{total} submitted",
+      "you": "You",
+      "metrics": {
+        "speech": "Speech {count}",
+        "votes": "Votes {count}",
+        "answerSubmitted": "Answer submitted",
+        "answerMissing": "Answer pending",
+        "voteSubmitted": "Vote cast",
+        "voteMissing": "Vote pending"
+      },
+      "legend": {
+        "title": "Status legend",
+        "done": "Submitted / voted",
+        "waiting": "Waiting",
+        "topVoted": "Most voted last round",
+        "inactive": "Inactive / no state"
+      },
+      "status": {
+        "current": "Current user",
+        "topVoted": "Most voted last round",
+        "submitted": "Submitted",
+        "waiting": "Waiting",
+        "spoke": "Spoke",
+        "voted": "Voted",
+        "inactive": "Inactive"
+      }
+    },
+    "dossier": {
+      "title": "Investigation dossier",
+      "description": "Review answers, speech, and vote records for this game.",
+      "stats": "Stats",
+      "answer": "Answer",
+      "discussion": "Discussion",
+      "vote": "Vote",
+      "noPlayer": "No player selected",
+      "noAnswer": "No public answer for this round",
+      "noMessages": "No messages from this player this round",
+      "votesAgainst": "{count} votes against",
+      "noVotes": "No votes recorded yet",
+      "abstained": "Abstained",
+      "roundTask": "Round task",
+      "currentAnswer": "Current answer",
+      "answerProgress": "{count}/{total} answers public",
+      "messageProgress": "{count} total messages this round",
+      "previousTopVoted": "Most voted last round",
+      "answerChars": "Answer {count} chars",
+      "votedFor": "Voted {target}",
+      "notVoted": "Vote pending",
+      "receivedVotes": "Votes received from",
+      "none": "None"
     }
   },
   "status": {

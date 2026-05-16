@@ -14,7 +14,7 @@ interface GameClientProps {
 export function GameClient({ room, snapshot, currentSessionPlayer }: GameClientProps) {
   return (
     <AppShell variant="game">
-      <AppShellContainer>
+      <AppShellContainer className="max-w-[1440px]">
         <GameLayout room={room} snapshot={snapshot} currentSessionPlayer={currentSessionPlayer} />
       </AppShellContainer>
     </AppShell>

@@ -2,19 +2,20 @@
 
 ## Goal
 
-The WiAI frontend should feel like a restrained investigation room: tense, readable, sparse, and immediately playable. It should not feel like a marketing page, a dense admin dashboard, or a decorative game skin.
+The WiAI frontend should feel like a restrained matrix investigation console: tense, readable, sparse, technological, and immediately playable. It should not feel like a marketing page, a dense admin dashboard, a decorative board-game skin, or a neon sci-fi shell.
 
 ## Visual Direction
 
-Use the **restrained investigation room** direction:
+Use the **restrained matrix console** direction:
 
 - Dark or neutral surfaces with careful contrast.
 - Low decoration and no visual noise.
+- Sparse matrix, glyph, and dot-grid texture may echo the homepage, but it must remain secondary to readable game state.
 - Strong hierarchy for phase, timer, question, and current action.
 - Clear suspicion and player context without crowding the main task.
 - shadcn/Vercel-style spacing, radius, borders, and typography.
 
-The UI may feel atmospheric, but readability and game-state clarity are more important than mood.
+The UI may feel atmospheric, but readability and game-state clarity are more important than mood. Avoid warm parchment, gold-label, tabletop, and heavy character-card treatments unless they are explicitly redesigned through the matrix-console language.
 
 ## shadcn/ui Usage
 
@@ -27,10 +28,12 @@ Use shadcn/ui primitives for:
 - `Textarea`
 - `Card`
 - `Badge`
+- `Avatar`
 - `Separator`
 - `Tooltip`
 - `Dialog`
 - `Sheet`
+- `Drawer`
 - `Tabs`
 - `ScrollArea`
 - `Alert`
@@ -47,8 +50,11 @@ Recommended project components:
 - `PageHeader`: product mark, room status, connection status, language switch entry.
 - `PhaseBanner`: phase name, countdown, round, current question.
 - `PlayerRoster`: player list, player status badges, current-player marker.
+- `PlayerStatusPanel`: desktop live-game left panel containing all active players.
 - `ActionCard`: the primary current action for the active phase.
+- `StageMainCanvas` / `CommandConsole`: central live-game control surface for the active phase task.
 - `ContextPanel`: secondary information such as messages, revealed answers, or vote context.
+- `InvestigationPanel`: persistent right-side player dossier for this game's statistics, answer record, discussion evidence, and vote context. It must not add a separate history tab.
 - `EmptyState`: consistent empty and waiting states.
 - `StatusBadge`: host, ready, disconnected, current player, locked, submitted.
 
@@ -70,28 +76,66 @@ Forbidden patterns:
 - Duplicating shadcn primitives as custom `.primary-button`, `.secondary-button`, or `.panel` classes.
 - Nested cards used only for decoration.
 - Hard-coded colors in page components when a token or variant should exist.
+- Large custom animation styles that compete with shadcn/ui component states.
+- Custom card skins that override shadcn radius, border, typography, or semantic color tokens for visual novelty.
 
 Allowed exceptions:
 
 - One-off layout utilities in the component that owns that layout.
-- Animation classes required by GSAP or transition hooks, if documented near the component.
+- Minimal animation hooks required by GSAP transition utilities, if documented near the component.
+- Homepage-derived canvas or matrix texture components, if they are background-only and do not replace shadcn primitives.
 - Global CSS variables required by shadcn or app-wide theme tokens.
 
 ## Layout Principles
 
 Desktop live game layout:
 
-- Left region: players and status.
-- Center region: phase, question, and primary action.
-- Right region: context such as messages, revealed answers, vote status, or round summary.
+- Top region: product identity, room code, round, phase, countdown, current player number, and known identity.
+- Left region: complete player status panel with all players.
+- Center region: a command console that only shows the active phase's primary task.
+- Right region: persistent investigation panel with player statistics, answer record, discussion evidence, and vote context.
+- Column heights are determined by the page height; columns scroll internally.
+
+Do not use the round-table layout as the default live-game master. The preferred live-game master is a three-column command-console layout inspired by the homepage matrix style.
 
 Mobile live game layout:
 
 - Top: phase, timer, room identity, and current question.
-- Main: one primary action.
-- Secondary context: `Sheet`, `Tabs`, or another shadcn-supported disclosure pattern.
+- Main: one primary command console.
+- Player context: compact horizontal player rail plus a roster `Sheet` or `Drawer`.
+- Secondary context: `Sheet`, `Drawer`, `Tabs`, or another shadcn-supported disclosure pattern.
 
 The app must preserve the current phase, countdown, question, and primary action across all breakpoints.
+
+## Live Game Command Console
+
+The live game command console is the primary gameplay surface.
+
+- During answer prep, `AnswerPrepCard` shows the question, answer guidance chips, answer-paper input, character count, submit/modify state, and submitted count.
+- During answer reveal, `AnswerRevealCard` shows an answer card wall, selected full answer, suspicion tags, and previous/next navigation.
+- During discussion, `DiscussionCard` shows the focus player, focus summary, relevant messages, quick replies, and the user's reply input.
+- During voting, `VotingDecisionCard` shows player ID nodes connected as a regular N-sided polygon, public vote arrows from voter to target, current selected target, and confirmation action. Do not draw a central VOTE label, X table, or checkmarks as a substitute for vote arrows.
+
+The player status panel shows public number, phase status, speech count, current vote count, answer status, and vote status. It must not show nicknames, mention counts, or heat scores during the game. Red status dots mean "most voted in the previous round" only.
+
+## Motion Principles
+
+Use shadcn/ui for static component appearance and state styling. Use GSAP only as a lightweight transition layer.
+
+Allowed GSAP use:
+
+- Phase-level wrapper transitions using `transform` and `autoAlpha`.
+- Staggered reveal of answer or settlement rows.
+- Short confirmation feedback on a selected player or submitted action.
+
+Avoid GSAP for:
+
+- Persistent player-card pulsing.
+- Decorative trails, large glow effects, or complex line animations.
+- Replacing shadcn hover, focus, selected, disabled, or validation states.
+- Animating layout properties such as width, height, top, or left.
+
+All motion must respect `prefers-reduced-motion`, clean up timelines on unmount, and leave content readable without animation.
 
 ## Information Priority
 

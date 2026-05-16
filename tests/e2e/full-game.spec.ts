@@ -7,21 +7,18 @@ const phaseText = {
 };
 
 test("one host browser completes a full Who is AI game with debug players", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Start" }).first().click();
-  await page.getByTestId("create-nickname").fill("Host");
-  await page.getByTestId("create-room").click();
-  await expect(page.getByTestId("room-code")).toHaveText(/\S+/);
-  const roomCode = (await page.getByTestId("room-code").innerText()).trim();
-  expect(roomCode.length).toBeGreaterThan(0);
-
-  await expect(page.getByTestId("add-debug-players")).toBeEnabled();
-  await page.getByTestId("add-debug-players").click();
-  await expect(page.getByText("Debug 1")).toBeVisible();
-  await expect(page.getByText("Debug 2")).toBeVisible();
-
-  await expect(page.getByTestId("start-game")).toBeEnabled();
-  await page.getByTestId("start-game").click();
+  await startGameWithDebugPlayers(page, "Host");
+  await expect(page.getByTestId("game-status-bar")).toBeVisible();
+  await expect(page.getByTestId("game-command-shell")).toBeVisible();
+  await expect(page.getByTestId("command-console")).toBeVisible();
+  await expect(page.getByTestId("game-action-bar")).toHaveCount(0);
+  await expect(page.getByTestId("player-left-panel")).toBeVisible();
+  await expect(page.getByTestId("player-column-left")).toBeVisible();
+  await expect(page.getByTestId("player-column-left")).toContainText(/Player 1|1 号玩家/);
+  await expect(page.getByTestId("player-column-left")).toContainText(/Player 3|3 号玩家/);
+  await expect(page.getByTestId("player-column-right")).toHaveCount(0);
+  await expect(page.getByTestId("investigation-panel")).toBeVisible();
+  await expectStableCommandShell(page);
 
   for (let round = 0; round < 3; round += 1) {
     await answerRound(page, `Host round ${round}`);
@@ -42,6 +39,37 @@ test("one host browser completes a full Who is AI game with debug players", asyn
   );
 });
 
+test("keeps a compact player rail available on narrower game viewports", async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 780 });
+  await startGameWithDebugPlayers(page, "Narrow");
+
+  await expect(page.getByTestId("game-status-bar")).toBeVisible();
+  await expect(page.getByTestId("game-command-shell")).toBeVisible();
+  await expect(page.getByTestId("command-console")).toBeVisible();
+  await expect(page.getByTestId("player-compact-rail")).toBeVisible();
+  await expect(page.getByTestId("player-compact-rail")).toContainText(/Player 1|1 号玩家/);
+  await expect(page.getByTestId("investigation-panel")).toBeVisible();
+  await expectStableCommandShell(page);
+});
+
+async function startGameWithDebugPlayers(page: Page, nickname: string) {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Start" }).first().click();
+  await page.getByTestId("create-nickname").fill(nickname);
+  await page.getByTestId("create-room").click();
+  await expect(page.getByTestId("room-code")).toHaveText(/\S+/);
+  const roomCode = (await page.getByTestId("room-code").innerText()).trim();
+  expect(roomCode.length).toBeGreaterThan(0);
+
+  await expect(page.getByTestId("add-debug-players")).toBeEnabled();
+  await page.getByTestId("add-debug-players").click();
+  await expect(page.getByText("Debug 1")).toBeVisible();
+  await expect(page.getByText("Debug 2")).toBeVisible();
+
+  await expect(page.getByTestId("start-game")).toBeEnabled();
+  await page.getByTestId("start-game").click();
+}
+
 async function answerRound(page: Page, content: string) {
   await expect(page.getByTestId("phase-name")).toHaveText(phaseText.answerPrep, { timeout: 10_000 });
   await page.getByTestId("answer-input").fill(content);
@@ -52,4 +80,9 @@ async function voteForAi(page: Page) {
   await expect(page.getByTestId("phase-name")).toHaveText(phaseText.voting, { timeout: 10_000 });
   await page.getByTestId("vote-option-4").click();
   await page.getByTestId("cast-vote").click();
+}
+
+async function expectStableCommandShell(page: Page) {
+  const shellBox = await page.getByTestId("game-command-shell").boundingBox();
+  expect(shellBox?.height ?? 0).toBeGreaterThanOrEqual(430);
 }

@@ -211,19 +211,51 @@
       "inputHint": "写一个足够具体的答案来证明你是人类",
       "placeholder": "写下你的答案...",
       "submit": "提交",
-      "cancel": "取消",
-      "submitted": "已提交"
+      "cancel": "修改答案",
+      "submitted": "已提交",
+      "roundTheme": "本轮主题",
+      "submittedCount": "已提交 {submitted}/{total}",
+      "waitingQuestion": "等待下一题",
+      "referenceTitle": "参考维度",
+      "reference": {
+        "concrete": "具体经历",
+        "tradeoff": "取舍理由",
+        "emotion": "真实情绪",
+        "detail": "细节补充"
+      },
+      "answerPaper": "你的答案"
     },
     "reveal": {
       "title": "答案揭晓",
-      "hint": "在讨论开始前仔细阅读每个答案"
+      "hint": "阅读每位用户的回答，标记可疑点。",
+      "answerWall": "答案卡墙",
+      "answerNumber": "答案 {number}",
+      "answerMeta": "{count} 字",
+      "currentViewing": "当前查看 {player}",
+      "previous": "上一条",
+      "next": "下一条",
+      "tags": {
+        "template": "像模板",
+        "thinDetail": "缺少细节",
+        "tooRational": "过于理性",
+        "real": "真实"
+      }
     },
     "discussion": {
       "title": "讨论",
       "hint": "质疑模糊的答案，注意可疑的模式",
       "empty": "暂无消息",
       "placeholder": "提出尖锐的问题...",
-      "send": "发送"
+      "send": "发送",
+      "currentFocus": "当前焦点",
+      "mentioned": "被提及 {count}",
+      "votes": "{count} 票",
+      "quick": {
+        "agree": "同意",
+        "challenge": "质疑",
+        "ask": "追问",
+        "example": "举例"
+      }
     },
     "vote": {
       "suspicionTitle": "怀疑投票",
@@ -231,7 +263,13 @@
       "recorded": "投票已记录",
       "hint": "选择一名活跃玩家，不能投自己",
       "cast": "投票",
-      "abstain": "弃权"
+      "castTarget": "投票给 {gameNumber} 号",
+      "abstain": "弃权",
+      "voteCount": "{count} 票",
+      "currentSelection": "当前选择",
+      "notSelected": "尚未选择",
+      "noTarget": "无目标",
+      "selectionHint": "先选择节点，再确认投票。确认后不可修改。"
     },
     "settlement": {
       "winner": "胜者",
@@ -249,6 +287,60 @@
       "discussionHint": "讨论时保持答案墙可见，方便追问可疑玩家。",
       "votingHint": "投票前复盘答案和讨论线索。",
       "settlementHint": "结算后公开角色和最终投票。"
+    },
+    "command": {
+      "room": "房间 {roomCode}",
+      "phaseRail": "阶段进度",
+      "submittedCount": "已提交 {submitted}/{total}",
+      "you": "你",
+      "metrics": {
+        "speech": "发言 {count}",
+        "votes": "票数 {count}",
+        "answerSubmitted": "答案已交",
+        "answerMissing": "答案待交",
+        "voteSubmitted": "已投票",
+        "voteMissing": "待投票"
+      },
+      "legend": {
+        "title": "状态图例",
+        "done": "已提交 / 已投票",
+        "waiting": "等待中",
+        "topVoted": "上一轮最高票",
+        "inactive": "离线 / 无状态"
+      },
+      "status": {
+        "current": "当前用户",
+        "topVoted": "上一轮最高票",
+        "submitted": "已提交",
+        "waiting": "等待中",
+        "spoke": "已发言",
+        "voted": "已投票",
+        "inactive": "离线"
+      }
+    },
+    "dossier": {
+      "title": "调查档案",
+      "description": "查看本局答案、发言和投票记录。",
+      "stats": "统计",
+      "answer": "答案",
+      "discussion": "发言",
+      "vote": "投票",
+      "noPlayer": "暂无选中玩家",
+      "noAnswer": "本轮暂无公开答案",
+      "noMessages": "该玩家本轮暂无发言",
+      "votesAgainst": "当前被投 {count} 票",
+      "noVotes": "暂无投票记录",
+      "abstained": "弃权",
+      "roundTask": "本轮任务",
+      "currentAnswer": "当前答案",
+      "answerProgress": "已公开 {count}/{total} 份答案",
+      "messageProgress": "本轮共 {count} 条发言",
+      "previousTopVoted": "上一轮最高票",
+      "answerChars": "答案 {count} 字",
+      "votedFor": "投给 {target}",
+      "notVoted": "待投票",
+      "receivedVotes": "收到投票来自",
+      "none": "无"
     }
   },
   "status": {

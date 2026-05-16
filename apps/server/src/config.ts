@@ -6,8 +6,8 @@ export const DEFAULT_ROOM_CONFIG: GameConfig = {
   maxPlayers: 6,
   phaseDurationsMs: {
     answer_prep: 30_000,
-    answer_reveal: 1_000,
-    discussion: 2_000,
+    answer_reveal: 8_000,
+    discussion: 8_000,
     voting: 30_000,
     settlement: 0
   }

@@ -3,7 +3,6 @@
 import { forwardRef } from "react";
 import { useTranslations } from "next-intl";
 import { LobbyBackdrop } from "../../LobbyBackdrop";
-import { LobbyIntelOverlay } from "../../LobbyIntelOverlay";
 import { BrandMark, PageHeader, PageTitle } from "@/components/layout/PageHeader";
 import { LanguageSwitch } from "@/components/layout/LanguageSwitch";
 import { Button } from "@/components/ui/button";
@@ -29,7 +28,6 @@ export const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
         data-promo-section="hero"
       >
         <LobbyBackdrop isActive={isHeroActive} />
-        <LobbyIntelOverlay isActive={isHeroActive} />
 
         <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-between p-4 sm:p-6">
           <div className="pointer-events-auto">
