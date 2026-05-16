@@ -38,7 +38,7 @@ export function TopStatusBar({ snapshot, currentSessionPlayer }: TopStatusBarPro
   return (
     <Card
       data-testid="game-status-bar"
-      className="flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between"
+      className="min-h-16 shrink-0 flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between"
     >
       <div className="flex min-w-0 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-2">

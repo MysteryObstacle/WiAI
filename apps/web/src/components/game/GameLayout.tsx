@@ -27,6 +27,7 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
   const [focusedPlayerId, setFocusedPlayerId] = useState(() =>
     getDefaultFocusedPlayerId(snapshot, currentSessionPlayer)
   );
+  const [selectedVoteTargetId, setSelectedVoteTargetId] = useState<string | undefined>();
 
   useEffect(() => {
     const exists = snapshot.sessionPlayers.some((player) => player.id === focusedPlayerId);
@@ -34,6 +35,12 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
       setFocusedPlayerId(getDefaultFocusedPlayerId(snapshot, currentSessionPlayer));
     }
   }, [currentSessionPlayer, focusedPlayerId, snapshot]);
+
+  useEffect(() => {
+    if (snapshot.phase !== "voting") {
+      setSelectedVoteTargetId(undefined);
+    }
+  }, [snapshot.phase]);
 
   const compactPlayers = useMemo(
     () => sortedPlayers(snapshot.sessionPlayers),
@@ -69,7 +76,9 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
           currentSessionPlayer={currentSessionPlayer}
           focusedPlayerId={focusedPlayerId}
           onFocusPlayer={setFocusedPlayerId}
+          onSelectVoteTarget={setSelectedVoteTargetId}
           room={room}
+          selectedVoteTargetId={selectedVoteTargetId}
           snapshot={snapshot}
         />
       )}
@@ -78,7 +87,7 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
   );
 
   return (
-    <div className="flex h-[calc(100vh-2.5rem)] min-h-0 flex-col gap-3">
+    <div className="flex h-[calc(100vh-2.5rem)] min-h-0 flex-col gap-3 overflow-hidden">
       <TopStatusBar snapshot={snapshot} currentSessionPlayer={currentSessionPlayer} />
 
       <div className="xl:hidden">
@@ -87,13 +96,14 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
           focusedPlayerId={focusedPlayerId}
           onFocusPlayer={focusPlayer}
           players={compactPlayers}
+          selectedPlayerId={selectedVoteTargetId}
           snapshot={snapshot}
           testId="player-compact-rail"
         />
       </div>
 
       <div
-        className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[260px_minmax(0,1fr)_320px]"
+        className="grid min-h-0 flex-1 gap-4 overflow-hidden lg:grid-cols-[260px_minmax(0,1fr)_320px]"
         data-testid="game-command-shell"
       >
         <aside className="hidden min-h-0 lg:block" data-testid="player-left-panel">
@@ -103,6 +113,7 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
               focusedPlayerId={focusedPlayerId}
               onFocusPlayer={focusPlayer}
               players={compactPlayers}
+              selectedPlayerId={selectedVoteTargetId}
               snapshot={snapshot}
               testId="player-column-left"
             />

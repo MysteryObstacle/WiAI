@@ -6,13 +6,19 @@ import { Send } from "lucide-react";
 import { useState } from "react";
 import { sendChat } from "@/game-client/roomCommands";
 import type { SessionPlayerSnapshot, WiaiSnapshot } from "@/game-client/types";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { EmptyState } from "./EmptyState";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { getPublicPlayerName } from "./gameViewModel";
+import {
+  getPlayerMentionCount,
+  getPublicPlayerName,
+  getVotesAgainst,
+  messagesForRound
+} from "./gameViewModel";
 
 interface DiscussionPanelProps {
   room: Room;
@@ -36,38 +42,66 @@ export function DiscussionPanel({ room, snapshot, currentSessionPlayer, focusedP
   const focusedName = focusedPlayer
     ? getPublicPlayerName(focusedPlayer, focusedPlayerLabel)
     : "";
+  const roundMessages = messagesForRound(snapshot);
+  const relatedMessages = focusedPlayer
+    ? roundMessages.filter(
+        (message) =>
+          message.sessionPlayerId === focusedPlayer.id ||
+          mentionsPlayer(message.content, focusedPlayer)
+      )
+    : roundMessages;
+  const mentionCount = focusedPlayer ? getPlayerMentionCount(snapshot, focusedPlayer) : 0;
+  const voteCount = focusedPlayer ? getVotesAgainst(snapshot, focusedPlayer.id) : 0;
+  const quickReplies = ["agree", "challenge", "ask", "example"] as const;
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="h-full min-h-0">
+      <CardHeader className="shrink-0">
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("hint")}</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">
+      <CardContent className="flex min-h-0 flex-1 flex-col gap-3">
         {focusedPlayer ? (
-          <article className="rounded-lg border border-border bg-input p-3">
-            <span className="text-xs text-muted-foreground">
-              {focusedName === focusedPlayerLabel
-                ? focusedPlayerLabel
-                : `${focusedPlayerLabel} / ${focusedName}`}
-            </span>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {focusedAnswer?.content ?? t("empty")}
-            </p>
-          </article>
+          <section className="grid gap-3 rounded-lg border border-border bg-input/50 p-4 md:grid-cols-[1fr_auto]">
+            <div>
+              <span className="text-xs text-muted-foreground">
+                {t("currentFocus")}
+              </span>
+              <h3 className="mt-1 text-lg font-semibold">
+                {focusedName === focusedPlayerLabel
+                  ? focusedPlayerLabel
+                  : `${focusedPlayerLabel} / ${focusedName}`}
+              </h3>
+              <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+                {focusedAnswer?.content ?? t("empty")}
+              </p>
+            </div>
+            <div className="grid min-w-36 grid-cols-3 gap-2 md:grid-cols-1">
+              <Badge variant="outline">{t("mentioned", { count: mentionCount })}</Badge>
+              <Badge variant="outline">{t("votes", { count: voteCount })}</Badge>
+              <Badge className={cn(mentionCount + voteCount > 1 && "text-destructive")} variant="secondary">
+                {t("heat", { count: Math.min(3, mentionCount + voteCount) })}
+              </Badge>
+            </div>
+          </section>
         ) : null}
-        <ScrollArea className="h-[420px] pr-4">
-          {snapshot.messages.length === 0 ? (
+        <ScrollArea className="min-h-0 flex-1 pr-4">
+          {relatedMessages.length === 0 ? (
             <EmptyState message={t("empty")} />
           ) : (
             <div className="flex flex-col gap-2.5">
-              {snapshot.messages.map((message) => {
+              {relatedMessages.map((message) => {
                 const player = snapshot.sessionPlayers.find((item) => item.id === message.sessionPlayerId);
+                const isMentioned =
+                  focusedPlayer && message.sessionPlayerId !== focusedPlayer.id
+                    ? mentionsPlayer(message.content, focusedPlayer)
+                    : false;
                 return (
                   <article
                     className={cn(
-                      "w-fit max-w-[560px] rounded-lg border border-border bg-input p-3",
-                      message.sessionPlayerId === currentSessionPlayer?.id && "ml-auto border-primary/45"
+                      "w-fit max-w-[640px] rounded-lg border border-border bg-input/50 p-3",
+                      message.sessionPlayerId === currentSessionPlayer?.id && "ml-auto border-primary/45",
+                      isMentioned && "border-destructive/45"
                     )}
                     key={message.id}
                   >
@@ -81,6 +115,19 @@ export function DiscussionPanel({ room, snapshot, currentSessionPlayer, focusedP
             </div>
           )}
         </ScrollArea>
+        <div className="flex flex-wrap gap-2">
+          {quickReplies.map((key) => (
+            <Button
+              key={key}
+              size="sm"
+              type="button"
+              variant="secondary"
+              onClick={() => setContent(t(`quick.${key}`))}
+            >
+              {t(`quick.${key}`)}
+            </Button>
+          ))}
+        </div>
         <div className="grid grid-cols-[1fr_auto] gap-2">
           <Input
             data-testid="chat-input"
@@ -103,5 +150,14 @@ export function DiscussionPanel({ room, snapshot, currentSessionPlayer, focusedP
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function mentionsPlayer(content: string, player: SessionPlayerSnapshot) {
+  const normalized = content.toLowerCase();
+  const displayName = player.displayName.trim().toLowerCase();
+  return (
+    new RegExp(`(^|[^0-9])#?${player.gameNumber}(号|\\b)`, "i").test(content) ||
+    (displayName.length > 0 && normalized.includes(displayName))
   );
 }

@@ -2,9 +2,14 @@ import { describe, expect, it } from "vitest";
 import type { SessionPlayerSnapshot, WiaiSnapshot } from "@/game-client/types";
 import {
   getDefaultFocusedPlayerId,
+  getDefaultDossierTab,
   getPlayerPublicStatus,
+  getPlayerMentionCount,
+  getPlayerStatusSummary,
   getPublicPlayerName,
   getSubmittedAnswerCount,
+  getVoteGraphEdges,
+  getVoteGraphNodes,
   getVotesAgainst,
   sortedPlayers,
   splitPlayerColumns
@@ -145,5 +150,91 @@ describe("gameViewModel", () => {
     expect(getPublicPlayerName(player({ displayName: "Ada", playerType: "ai" }), "Player 1")).toBe(
       "Ada"
     );
+  });
+
+  it("counts mentions by public number or display name in current-round messages", () => {
+    const state = snapshot({
+      messages: [
+        { id: "m1", roundIndex: 0, sessionPlayerId: "p1", content: "我想问 3号 的细节", createdAt: "" },
+        { id: "m2", roundIndex: 0, sessionPlayerId: "p2", content: "Debug 2 回答太标准", createdAt: "" },
+        { id: "m3", roundIndex: 1, sessionPlayerId: "p2", content: "3号 old", createdAt: "" },
+        { id: "m4", roundIndex: 0, sessionPlayerId: "p3", content: "我自己解释一下", createdAt: "" }
+      ]
+    });
+
+    expect(getPlayerMentionCount(state, state.sessionPlayers[2]!)).toBe(2);
+  });
+
+  it("summarizes player status for the left status panel", () => {
+    const state = snapshot({
+      phase: "voting",
+      messages: [
+        { id: "m1", roundIndex: 0, sessionPlayerId: "p1", content: "4号很可疑", createdAt: "" }
+      ],
+      ballots: [
+        {
+          id: "b1",
+          roundIndex: 0,
+          actorSessionPlayerId: "p2",
+          ballotType: "suspicion",
+          targetSessionPlayerId: "p4",
+          abstain: false
+        }
+      ]
+    });
+
+    const summary = getPlayerStatusSummary(state, state.sessionPlayers[3]!, state.sessionPlayers[0], "p4");
+
+    expect(summary.status).toBe("selected");
+    expect(summary.mentionCount).toBe(1);
+    expect(summary.voteCount).toBe(1);
+    expect(summary.heat).toBe(2);
+  });
+
+  it("maps phases to the default dossier tab", () => {
+    expect(getDefaultDossierTab("answer_prep")).toBe("player");
+    expect(getDefaultDossierTab("answer_reveal")).toBe("answer");
+    expect(getDefaultDossierTab("discussion")).toBe("discussion");
+    expect(getDefaultDossierTab("voting")).toBe("vote");
+  });
+
+  it("builds vote graph nodes and public vote edges", () => {
+    const state = snapshot({
+      phase: "voting",
+      ballots: [
+        {
+          id: "b1",
+          roundIndex: 0,
+          actorSessionPlayerId: "p1",
+          ballotType: "suspicion",
+          targetSessionPlayerId: "p4",
+          abstain: false
+        },
+        {
+          id: "b2",
+          roundIndex: 0,
+          actorSessionPlayerId: "p2",
+          ballotType: "suspicion",
+          targetSessionPlayerId: "",
+          abstain: true
+        }
+      ]
+    });
+
+    const nodes = getVoteGraphNodes(state, state.sessionPlayers[0], "p4");
+    const edges = getVoteGraphEdges(state);
+
+    expect(nodes).toHaveLength(4);
+    expect(nodes[0]).toMatchObject({ gameNumber: 1, isCurrent: true, hasVoted: true });
+    expect(nodes[3]).toMatchObject({ gameNumber: 4, isSelected: true, votesAgainst: 1 });
+    expect(edges).toEqual([
+      {
+        id: "b1",
+        actorSessionPlayerId: "p1",
+        targetSessionPlayerId: "p4",
+        actorGameNumber: 1,
+        targetGameNumber: 4
+      }
+    ]);
   });
 });
