@@ -50,12 +50,11 @@ Recommended project components:
 - `PageHeader`: product mark, room status, connection status, language switch entry.
 - `PhaseBanner`: phase name, countdown, round, current question.
 - `PlayerRoster`: player list, player status badges, current-player marker.
-- `PlayerColumns`: desktop live-game player status columns for 6-8 players.
+- `PlayerStatusPanel`: desktop live-game left panel containing all active players.
 - `ActionCard`: the primary current action for the active phase.
-- `CommandConsole`: central live-game control surface for the active phase task.
-- `ActionBar`: bottom command row for current focus and phase-specific actions.
+- `StageMainCanvas` / `CommandConsole`: central live-game control surface for the active phase task.
 - `ContextPanel`: secondary information such as messages, revealed answers, or vote context.
-- `InvestigationSheet`: secondary player dossier, answer history, discussion evidence, and vote context.
+- `InvestigationPanel`: persistent right-side player dossier, answer history, discussion evidence, vote context, and history.
 - `EmptyState`: consistent empty and waiting states.
 - `StatusBadge`: host, ready, disconnected, current player, locked, submitted.
 
@@ -92,18 +91,18 @@ Allowed exceptions:
 Desktop live game layout:
 
 - Top region: product identity, room code, round, phase, countdown, current player number, and known identity.
-- Left and right regions: player status columns, designed for 6-8 players with 3-4 players per side.
+- Left region: complete player status panel with all players.
 - Center region: a command console that only shows the active phase's primary task.
-- Bottom region: current focus and phase-specific actions.
-- Secondary context: player dossier, answer history, discussion evidence, and vote context in `Sheet`, `Drawer`, `Tabs`, or another shadcn-supported disclosure pattern.
+- Right region: persistent investigation panel with player dossier, answer history, discussion evidence, vote context, and history.
+- Column heights are determined by the page height; columns scroll internally.
 
-Do not use the round-table layout as the default live-game master. The preferred live-game master is a command-console layout inspired by the homepage matrix style and the Wolfcha-style two-sided player roster structure.
+Do not use the round-table layout as the default live-game master. The preferred live-game master is a three-column command-console layout inspired by the homepage matrix style.
 
 Mobile live game layout:
 
 - Top: phase, timer, room identity, and current question.
 - Main: one primary command console.
-- Player context: compact current-focus strip plus a roster `Sheet` or `Drawer`.
+- Player context: compact horizontal player rail plus a roster `Sheet` or `Drawer`.
 - Secondary context: `Sheet`, `Drawer`, `Tabs`, or another shadcn-supported disclosure pattern.
 
 The app must preserve the current phase, countdown, question, and primary action across all breakpoints.
@@ -112,12 +111,12 @@ The app must preserve the current phase, countdown, question, and primary action
 
 The live game command console is the primary gameplay surface.
 
-- During answer prep, it shows the question, answer guidance, answer input, and submit state.
-- During answer reveal, it shows the selected player's full answer and lightweight suspicion markers.
-- During discussion, it shows the focus player, relevant answer context, evidence-oriented messages, and the user's reply input.
-- During voting, it shows the selected target, reasoning context, and vote confirmation.
+- During answer prep, `AnswerPrepCard` shows the question, answer guidance chips, answer-paper input, character count, submit/modify state, and submitted count.
+- During answer reveal, `AnswerRevealCard` shows an answer card wall, selected full answer, suspicion tags, and previous/next navigation.
+- During discussion, `DiscussionCard` shows the focus player, focus summary, relevant messages, quick replies, and the user's reply input.
+- During voting, `VotingDecisionCard` shows a planar voting relationship graph, current selected target, and confirmation action.
 
-Player columns show status and suspicion context, not hidden identity. Clicking a player sets the current focus and opens or updates the dossier surface; it should not change the current phase.
+The player status panel shows status and suspicion context, not hidden identity. Clicking a player sets the current focus and updates the right dossier surface; it should not change the current phase.
 
 ## Motion Principles
 

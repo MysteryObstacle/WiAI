@@ -37,10 +37,10 @@ state.phase changes
 
 Behavior:
 
-- fade/slide the central command console wrapper
-- keep the top status bar and player columns stable
+- fade the central stage canvas wrapper, with at most a very small translateY when it does not cause layout shift
+- keep the top status bar, left player panel, and right investigation panel stable
 - focus primary action when appropriate
-- keep duration short, generally 0.25-0.4s
+- keep duration short, generally 0.18-0.24s
 
 ## Answer Reveal
 
@@ -52,10 +52,24 @@ phase enters answer_reveal
 
 Behavior:
 
-- reveal answers one by one
+- reveal answer cards one by one
 - preserve final static list after animation
 - use a subtle stagger on answer rows or selected-answer changes
 - avoid decorative sticker or card-flip effects unless implemented through existing component variants
+
+## Discussion
+
+Trigger:
+
+```text
+new message arrives or focused player changes
+```
+
+Behavior:
+
+- fade new relevant messages in with a subtle upward motion
+- briefly emphasize the mentioned/focused player card
+- avoid persistent pulsing while players are reading
 
 ## Vote Feedback
 
@@ -67,7 +81,9 @@ current player submits a ballot
 
 Behavior:
 
-- briefly emphasize the selected target player card using scale or opacity only
+- briefly emphasize the selected vote node using scale or opacity only
+- after confirmation, animate a lightweight arrow from the current user's node to the selected target when public vote mode is enabled
+- bounce the affected vote count once
 - update vote state with static readable content after the confirmation
 - do not use persistent trails, large glows, or complex custom line animations
 

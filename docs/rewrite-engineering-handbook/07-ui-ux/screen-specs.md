@@ -34,31 +34,39 @@ Start button explains disabled reason.
 Required regions:
 
 - top status bar with product identity, room code, round, phase, countdown, current player number, and known identity
-- left and right player status columns for the 6-8 player target layout
-- central command console for the active phase's primary task
-- bottom action bar with current focus and phase-specific commands
-- investigation sheet/drawer for player dossier, answer history, discussion evidence, and vote context
+- left player status panel with all active players, phase status, speech counts, suspicion/vote counts, and selected/focus state
+- central stage main canvas for the active phase's primary task
+- right persistent investigation panel for player dossier, answer history, discussion evidence, vote context, and history
 - revealed answers, discussion messages, and vote state surfaced through the active command console or dossier, not as always-on competing panels
 
-Action panel changes by phase.
+The three main columns share the page's remaining height. Each column scrolls internally instead of pushing the page taller.
 
 Preferred desktop structure:
 
 ```text
 top status bar
-left player column | central command console | right player column
-bottom focus/action bar
-secondary dossier in Sheet/Drawer
+left player status panel | central stage main canvas | right investigation panel
 ```
 
 Preferred phase behavior:
 
-- Answer prep: central console shows the question, answer guidance, answer input, and submit/cancel state. Player columns show submitted/waiting only.
-- Answer reveal: central console shows the selected player's full answer. Player columns show public answer availability and suspicion markers.
-- Discussion: central console organizes messages around the current focus player and relevant answer context. It should not become a generic full-screen chat.
-- Voting: player cards act as candidate selectors. The central console shows selected target, reasoning context, and confirmation.
+- Answer prep: `AnswerPrepCard` shows the question, answer guidance chips, answer-paper textarea, character count, submit/modify state, and submitted count. Left panel emphasizes submitted/waiting status. Right panel shows round task guidance if no evidence exists yet.
+- Answer reveal: `AnswerRevealCard` shows an answer card wall plus selected answer detail and suspicion tags. Right panel follows the selected answer's player and highlights answer evidence.
+- Discussion: `DiscussionCard` organizes messages around the current focus player, focus summary, and quick replies. It should not become a generic full-screen chat.
+- Voting: `VotingDecisionCard` uses a planar voting relationship graph with player nodes and arrows. It must not repeat candidate cards from the left panel.
 
 Do not expose AI identity in player cards during normal play. Debug-only identity labels must stay out of the production game surface.
+
+Desktop sizing:
+
+- left panel: 240-260px
+- center canvas: minmax(0, 1fr)
+- right panel: 320px
+
+Tablet and mobile:
+
+- tablet may keep a compressed left panel and collapse the dossier
+- mobile uses top bar, horizontal player rail, single stage card, and dossier drawer
 
 ## Settlement Screen
 
