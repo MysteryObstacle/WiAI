@@ -250,7 +250,6 @@
       "currentFocus": "当前焦点",
       "mentioned": "被提及 {count}",
       "votes": "{count} 票",
-      "heat": "热度 {count}/3",
       "quick": {
         "agree": "同意",
         "challenge": "质疑",
@@ -296,20 +295,22 @@
       "you": "你",
       "metrics": {
         "speech": "发言 {count}",
-        "mentions": "被提 {count}",
         "votes": "票数 {count}",
-        "heat": "热度"
+        "answerSubmitted": "答案已交",
+        "answerMissing": "答案待交",
+        "voteSubmitted": "已投票",
+        "voteMissing": "待投票"
       },
       "legend": {
         "title": "状态图例",
         "done": "已提交 / 已投票",
         "waiting": "等待中",
-        "suspicious": "当前选择 / 高疑似",
+        "topVoted": "上一轮最高票",
         "inactive": "离线 / 无状态"
       },
       "status": {
-        "current": "你",
-        "selected": "当前选择",
+        "current": "当前用户",
+        "topVoted": "上一轮最高票",
         "submitted": "已提交",
         "waiting": "等待中",
         "spoke": "已发言",
@@ -319,13 +320,11 @@
     },
     "dossier": {
       "title": "调查档案",
-      "description": "查看当前焦点玩家的公开证据。",
-      "focused": "当前焦点",
-      "player": "玩家",
+      "description": "查看本局答案、发言和投票记录。",
+      "stats": "统计",
       "answer": "答案",
       "discussion": "发言",
       "vote": "投票",
-      "history": "历史",
       "noPlayer": "暂无选中玩家",
       "noAnswer": "本轮暂无公开答案",
       "noMessages": "该玩家本轮暂无发言",
@@ -336,8 +335,12 @@
       "currentAnswer": "当前答案",
       "answerProgress": "已公开 {count}/{total} 份答案",
       "messageProgress": "本轮共 {count} 条发言",
-      "roundQuestion": "本轮问题",
-      "historySummary": "{answers} 份答案 · {messages} 条发言 · {votes} 条投票记录"
+      "previousTopVoted": "上一轮最高票",
+      "answerChars": "答案 {count} 字",
+      "votedFor": "投给 {target}",
+      "notVoted": "待投票",
+      "receivedVotes": "收到投票来自",
+      "none": "无"
     }
   },
   "status": {

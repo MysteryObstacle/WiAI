@@ -6,6 +6,7 @@ import {
   getPlayerPublicStatus,
   getPlayerMentionCount,
   getPlayerStatusSummary,
+  getPreviousRoundTopVotedPlayerIds,
   getPublicPlayerName,
   getSubmittedAnswerCount,
   getVoteGraphEdges,
@@ -183,19 +184,47 @@ describe("gameViewModel", () => {
       ]
     });
 
-    const summary = getPlayerStatusSummary(state, state.sessionPlayers[3]!, state.sessionPlayers[0], "p4");
+    const summary = getPlayerStatusSummary(state, state.sessionPlayers[3]!, state.sessionPlayers[0]);
 
-    expect(summary.status).toBe("selected");
-    expect(summary.mentionCount).toBe(1);
+    expect(summary.status).toBe("waiting");
     expect(summary.voteCount).toBe(1);
-    expect(summary.heat).toBe(2);
+    expect(summary.receivedVoteActorGameNumbers).toEqual([2]);
   });
 
   it("maps phases to the default dossier tab", () => {
-    expect(getDefaultDossierTab("answer_prep")).toBe("player");
+    expect(getDefaultDossierTab("answer_prep")).toBe("stats");
     expect(getDefaultDossierTab("answer_reveal")).toBe("answer");
     expect(getDefaultDossierTab("discussion")).toBe("discussion");
     expect(getDefaultDossierTab("voting")).toBe("vote");
+    expect(getDefaultDossierTab("settlement")).toBe("vote");
+  });
+
+  it("marks the top-voted player from the previous completed round", () => {
+    const state = snapshot({
+      roundIndex: 1,
+      phase: "answer_prep",
+      ballots: [
+        {
+          id: "b1",
+          roundIndex: 0,
+          actorSessionPlayerId: "p1",
+          ballotType: "suspicion",
+          targetSessionPlayerId: "p4",
+          abstain: false
+        },
+        {
+          id: "b2",
+          roundIndex: 0,
+          actorSessionPlayerId: "p2",
+          ballotType: "suspicion",
+          targetSessionPlayerId: "p4",
+          abstain: false
+        }
+      ]
+    });
+
+    expect(getPreviousRoundTopVotedPlayerIds(state)).toEqual(["p4"]);
+    expect(getPlayerPublicStatus(state, state.sessionPlayers[3]!, state.sessionPlayers[0])).toBe("topVoted");
   });
 
   it("builds vote graph nodes and public vote edges", () => {
@@ -225,7 +254,7 @@ describe("gameViewModel", () => {
     const edges = getVoteGraphEdges(state);
 
     expect(nodes).toHaveLength(4);
-    expect(nodes[0]).toMatchObject({ gameNumber: 1, isCurrent: true, hasVoted: true });
+    expect(nodes[0]).toMatchObject({ gameNumber: 1, isCurrent: true, hasVoted: true, y: 85 });
     expect(nodes[3]).toMatchObject({ gameNumber: 4, isSelected: true, votesAgainst: 1 });
     expect(edges).toEqual([
       {

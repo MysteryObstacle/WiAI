@@ -8,23 +8,24 @@ import type {
 
 export type PlayerPublicStatus =
   | "current"
-  | "selected"
+  | "topVoted"
   | "submitted"
   | "waiting"
   | "spoke"
   | "voted"
   | "inactive";
 
-export type DossierTab = "player" | "answer" | "discussion" | "vote" | "history";
+export type DossierTab = "stats" | "answer" | "discussion" | "vote";
 
 export type PlayerStatusSummary = {
   status: PlayerPublicStatus;
   speechCount: number;
-  mentionCount: number;
   voteCount: number;
-  heat: 0 | 1 | 2 | 3;
+  answerCharacterCount: number;
+  castVoteTargetGameNumber: number | undefined;
+  receivedVoteActorGameNumbers: number[];
   isCurrent: boolean;
-  isSelected: boolean;
+  isPreviousRoundTopVoted: boolean;
   isSubmitted: boolean;
   hasVoted: boolean;
 };
@@ -103,6 +104,16 @@ export function getVotesAgainst(snapshot: WiaiSnapshot, targetSessionPlayerId: s
   ).length;
 }
 
+export function getBallotsAgainstPlayer(snapshot: WiaiSnapshot, targetSessionPlayerId: string) {
+  return ballotsForRound(snapshot).filter(
+    (ballot) => !ballot.abstain && ballot.targetSessionPlayerId === targetSessionPlayerId
+  );
+}
+
+export function getPlayerBallot(snapshot: WiaiSnapshot, sessionPlayerId: string) {
+  return ballotsForRound(snapshot).find((ballot) => ballot.actorSessionPlayerId === sessionPlayerId);
+}
+
 export function getPlayerSpeechCount(snapshot: WiaiSnapshot, sessionPlayerId: string) {
   return getPlayerMessages(snapshot, sessionPlayerId).length;
 }
@@ -125,11 +136,10 @@ export function getPlayerVoteCount(snapshot: WiaiSnapshot, sessionPlayerId: stri
 export function getPlayerPublicStatus(
   snapshot: WiaiSnapshot,
   player: SessionPlayerSnapshot,
-  currentSessionPlayer: SessionPlayerSnapshot | undefined,
-  selectedTargetId?: string
+  currentSessionPlayer: SessionPlayerSnapshot | undefined
 ): PlayerPublicStatus {
   if (!player.isActive) return "inactive";
-  if (player.id === selectedTargetId) return "selected";
+  if (isPreviousRoundTopVoted(snapshot, player.id)) return "topVoted";
   if (player.id === currentSessionPlayer?.id) return "current";
 
   if (snapshot.phase === "answer_prep") {
@@ -152,22 +162,31 @@ export function getPlayerPublicStatus(
 export function getPlayerStatusSummary(
   snapshot: WiaiSnapshot,
   player: SessionPlayerSnapshot,
-  currentSessionPlayer: SessionPlayerSnapshot | undefined,
-  selectedTargetId?: string
+  currentSessionPlayer: SessionPlayerSnapshot | undefined
 ): PlayerStatusSummary {
   const speechCount = getPlayerSpeechCount(snapshot, player.id);
-  const mentionCount = getPlayerMentionCount(snapshot, player);
   const voteCount = getPlayerVoteCount(snapshot, player.id);
-  const heat = Math.min(3, Math.max(0, mentionCount + voteCount)) as 0 | 1 | 2 | 3;
+  const answerCharacterCount = getPlayerAnswer(snapshot, player.id)?.content.length ?? 0;
+  const playerBallot = getPlayerBallot(snapshot, player.id);
+  const castVoteTarget = snapshot.sessionPlayers.find(
+    (item) => item.id === playerBallot?.targetSessionPlayerId
+  );
+  const receivedVoteActorGameNumbers = getBallotsAgainstPlayer(snapshot, player.id)
+    .map((ballot) =>
+      snapshot.sessionPlayers.find((item) => item.id === ballot.actorSessionPlayerId)?.gameNumber
+    )
+    .filter((gameNumber): gameNumber is number => typeof gameNumber === "number")
+    .sort((left, right) => left - right);
 
   return {
-    status: getPlayerPublicStatus(snapshot, player, currentSessionPlayer, selectedTargetId),
+    status: getPlayerPublicStatus(snapshot, player, currentSessionPlayer),
     speechCount,
-    mentionCount,
     voteCount,
-    heat,
+    answerCharacterCount,
+    castVoteTargetGameNumber: castVoteTarget?.gameNumber,
+    receivedVoteActorGameNumbers,
     isCurrent: player.id === currentSessionPlayer?.id,
-    isSelected: player.id === selectedTargetId,
+    isPreviousRoundTopVoted: isPreviousRoundTopVoted(snapshot, player.id),
     isSubmitted: Boolean(getPlayerAnswer(snapshot, player.id)),
     hasVoted: ballotsForRound(snapshot).some((ballot) => ballot.actorSessionPlayerId === player.id)
   };
@@ -192,8 +211,36 @@ export function getDefaultDossierTab(phase: WiaiSnapshot["phase"]): DossierTab {
   if (phase === "answer_reveal") return "answer";
   if (phase === "discussion") return "discussion";
   if (phase === "voting") return "vote";
-  if (phase === "settlement") return "history";
-  return "player";
+  if (phase === "settlement") return "vote";
+  return "stats";
+}
+
+export function getPreviousRoundTopVotedPlayerIds(snapshot: WiaiSnapshot) {
+  const previousRoundIndex = snapshot.phase === "settlement"
+    ? snapshot.roundIndex
+    : snapshot.roundIndex - 1;
+  if (previousRoundIndex < 0) return [];
+
+  const voteCounts = new Map<string, number>();
+  snapshot.ballots
+    .filter((ballot) => ballot.roundIndex === previousRoundIndex && !ballot.abstain)
+    .forEach((ballot) => {
+      voteCounts.set(
+        ballot.targetSessionPlayerId,
+        (voteCounts.get(ballot.targetSessionPlayerId) ?? 0) + 1
+      );
+    });
+
+  const maxVotes = Math.max(0, ...voteCounts.values());
+  if (maxVotes === 0) return [];
+
+  return [...voteCounts.entries()]
+    .filter(([, count]) => count === maxVotes)
+    .map(([sessionPlayerId]) => sessionPlayerId);
+}
+
+export function isPreviousRoundTopVoted(snapshot: WiaiSnapshot, sessionPlayerId: string) {
+  return getPreviousRoundTopVotedPlayerIds(snapshot).includes(sessionPlayerId);
 }
 
 export function getVoteGraphNodes(
@@ -203,15 +250,19 @@ export function getVoteGraphNodes(
 ): VoteGraphNode[] {
   const players = sortedPlayers(snapshot.sessionPlayers);
   const center = 50;
-  const radius = 34;
-  const startAngle = -Math.PI / 2;
+  const radius = 35;
+  const currentIndex = Math.max(
+    0,
+    players.findIndex((player) => player.id === currentSessionPlayer?.id)
+  );
+  const startAngle = Math.PI / 2 - (currentIndex / Math.max(1, players.length)) * Math.PI * 2;
 
   return players.map((player, index) => {
     const angle = startAngle + (index / Math.max(1, players.length)) * Math.PI * 2;
     return {
       playerId: player.id,
       gameNumber: player.gameNumber,
-      label: player.displayName,
+      label: String(player.gameNumber),
       x: Math.round((center + Math.cos(angle) * radius) * 100) / 100,
       y: Math.round((center + Math.sin(angle) * radius) * 100) / 100,
       isCurrent: player.id === currentSessionPlayer?.id,

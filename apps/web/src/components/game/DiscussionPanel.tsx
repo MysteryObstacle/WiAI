@@ -15,7 +15,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
   getPlayerMentionCount,
-  getPublicPlayerName,
   getVotesAgainst,
   messagesForRound
 } from "./gameViewModel";
@@ -38,9 +37,6 @@ export function DiscussionPanel({ room, snapshot, currentSessionPlayer, focusedP
   );
   const focusedPlayerLabel = focusedPlayer
     ? tGame("player.label", { gameNumber: focusedPlayer.gameNumber })
-    : "";
-  const focusedName = focusedPlayer
-    ? getPublicPlayerName(focusedPlayer, focusedPlayerLabel)
     : "";
   const roundMessages = messagesForRound(snapshot);
   const relatedMessages = focusedPlayer
@@ -67,21 +63,14 @@ export function DiscussionPanel({ room, snapshot, currentSessionPlayer, focusedP
               <span className="text-xs text-muted-foreground">
                 {t("currentFocus")}
               </span>
-              <h3 className="mt-1 text-lg font-semibold">
-                {focusedName === focusedPlayerLabel
-                  ? focusedPlayerLabel
-                  : `${focusedPlayerLabel} / ${focusedName}`}
-              </h3>
+              <h3 className="mt-1 text-lg font-semibold">{focusedPlayerLabel}</h3>
               <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
                 {focusedAnswer?.content ?? t("empty")}
               </p>
             </div>
-            <div className="grid min-w-36 grid-cols-3 gap-2 md:grid-cols-1">
+            <div className="grid min-w-36 grid-cols-2 gap-2 md:grid-cols-1">
               <Badge variant="outline">{t("mentioned", { count: mentionCount })}</Badge>
               <Badge variant="outline">{t("votes", { count: voteCount })}</Badge>
-              <Badge className={cn(mentionCount + voteCount > 1 && "text-destructive")} variant="secondary">
-                {t("heat", { count: Math.min(3, mentionCount + voteCount) })}
-              </Badge>
             </div>
           </section>
         ) : null}
@@ -154,10 +143,5 @@ export function DiscussionPanel({ room, snapshot, currentSessionPlayer, focusedP
 }
 
 function mentionsPlayer(content: string, player: SessionPlayerSnapshot) {
-  const normalized = content.toLowerCase();
-  const displayName = player.displayName.trim().toLowerCase();
-  return (
-    new RegExp(`(^|[^0-9])#?${player.gameNumber}(号|\\b)`, "i").test(content) ||
-    (displayName.length > 0 && normalized.includes(displayName))
-  );
+  return new RegExp(`(^|[^0-9])#?${player.gameNumber}(号|\\b)`, "i").test(content);
 }

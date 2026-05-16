@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -20,7 +21,6 @@ import {
   getPlayerAnswer,
   getPlayerMessages,
   getPlayerStatusSummary,
-  getPublicPlayerName,
   getVotesAgainst,
   messagesForRound,
   type DossierTab
@@ -49,14 +49,17 @@ export function InvestigationPanel({
   const roundMessages = messagesForRound(snapshot);
   const roundBallots = ballotsForRound(snapshot);
   const statusSummary = focusedPlayer
-    ? getPlayerStatusSummary(snapshot, focusedPlayer, undefined, undefined)
+    ? getPlayerStatusSummary(snapshot, focusedPlayer, undefined)
     : undefined;
-  const publicName = focusedPlayer
-    ? getPublicPlayerName(
-        focusedPlayer,
-        tGame("player.label", { gameNumber: focusedPlayer.gameNumber })
-      )
+  const playerLabel = focusedPlayer
+    ? tGame("player.label", { gameNumber: focusedPlayer.gameNumber })
     : "";
+  const playerBallot = focusedPlayer
+    ? roundBallots.find((ballot) => ballot.actorSessionPlayerId === focusedPlayer.id)
+    : undefined;
+  const playerVoteTarget = snapshot.sessionPlayers.find(
+    (player) => player.id === playerBallot?.targetSessionPlayerId
+  );
 
   useEffect(() => {
     setTab(defaultTab);
@@ -66,9 +69,7 @@ export function InvestigationPanel({
     <Card data-testid="investigation-panel" className="h-full min-h-0">
       <CardHeader className="shrink-0">
         <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>
-          {focusedPlayer ? `${t("focused")}: ${publicName}` : t("description")}
-        </CardDescription>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
 
       {!focusedPlayer ? (
@@ -77,37 +78,65 @@ export function InvestigationPanel({
         </CardContent>
       ) : (
         <CardContent className="flex min-h-0 flex-1 flex-col">
+          <article className="mb-3 rounded-lg border border-border bg-input/50 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <strong>{playerLabel}</strong>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {tCommand(`status.${statusSummary?.status ?? "waiting"}`)}
+                </p>
+              </div>
+              {statusSummary?.isCurrent ? <Badge variant="outline">{tCommand("you")}</Badge> : null}
+              {statusSummary?.isPreviousRoundTopVoted ? (
+                <Badge className="border-destructive/50 text-destructive" variant="outline">
+                  {t("previousTopVoted")}
+                </Badge>
+              ) : null}
+            </div>
+          </article>
+
           <Tabs
             value={tab}
             onValueChange={(value) => setTab(value as DossierTab)}
             className="flex min-h-0 flex-1 flex-col"
           >
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger className="text-xs" value="player">{t("player")}</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger className="text-xs" value="stats">{t("stats")}</TabsTrigger>
               <TabsTrigger className="text-xs" value="answer">{t("answer")}</TabsTrigger>
               <TabsTrigger className="text-xs" value="discussion">{t("discussion")}</TabsTrigger>
               <TabsTrigger className="text-xs" value="vote">{t("vote")}</TabsTrigger>
-              <TabsTrigger className="text-xs" value="history">{t("history")}</TabsTrigger>
             </TabsList>
 
             <ScrollArea className="mt-3 min-h-0 flex-1 pr-3">
-              <TabsContent value="player" className="mt-0">
+              <TabsContent value="stats" className="mt-0">
                 <div className="flex flex-col gap-3">
-                  <div className="rounded-lg border border-border bg-input/50 p-3">
-                    <strong>{publicName}</strong>
-                    <span className="mt-1 block text-sm text-muted-foreground">
-                      {tGame("player.label", { gameNumber: focusedPlayer.gameNumber })}
-                    </span>
-                  </div>
                   <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                     <Metric label={tCommand("metrics.speech", { count: statusSummary?.speechCount ?? 0 })} />
-                    <Metric label={tCommand("metrics.mentions", { count: statusSummary?.mentionCount ?? 0 })} />
                     <Metric label={tCommand("metrics.votes", { count: statusSummary?.voteCount ?? 0 })} />
-                    <Metric label={`${tCommand("metrics.heat")} ${statusSummary?.heat ?? 0}/3`} />
+                    <Metric label={t("answerChars", { count: statusSummary?.answerCharacterCount ?? 0 })} />
+                    <Metric
+                      label={
+                        statusSummary?.hasVoted
+                          ? t("votedFor", {
+                              target: playerVoteTarget
+                                ? tGame("player.label", { gameNumber: playerVoteTarget.gameNumber })
+                                : t("abstained")
+                            })
+                          : t("notVoted")
+                      }
+                    />
                   </div>
                   <article className="rounded-lg border border-border bg-card p-3 text-sm leading-relaxed text-muted-foreground">
                     <strong className="mb-1 block text-foreground">{t("roundTask")}</strong>
                     {question?.prompt ?? tGame("question.waiting")}
+                  </article>
+                  <article className="rounded-lg border border-border bg-card p-3 text-sm leading-relaxed text-muted-foreground">
+                    <strong className="mb-1 block text-foreground">{t("receivedVotes")}</strong>
+                    {statusSummary && statusSummary.receivedVoteActorGameNumbers.length > 0
+                      ? statusSummary.receivedVoteActorGameNumbers
+                          .map((gameNumber) => tGame("player.label", { gameNumber }))
+                          .join(" / ")
+                      : t("none")}
                   </article>
                 </div>
               </TabsContent>
@@ -184,21 +213,6 @@ export function InvestigationPanel({
                 </div>
               </TabsContent>
 
-              <TabsContent value="history" className="mt-0">
-                <div className="flex flex-col gap-3 text-sm leading-relaxed text-muted-foreground">
-                  <article className="rounded-lg border border-border bg-input/50 p-3">
-                    <strong className="mb-1 block text-foreground">{t("roundQuestion")}</strong>
-                    {question?.prompt ?? tGame("question.waiting")}
-                  </article>
-                  <article className="rounded-lg border border-border bg-card p-3">
-                    {t("historySummary", {
-                      answers: roundAnswers.length,
-                      messages: roundMessages.length,
-                      votes: roundBallots.length
-                    })}
-                  </article>
-                </div>
-              </TabsContent>
             </ScrollArea>
           </Tabs>
         </CardContent>

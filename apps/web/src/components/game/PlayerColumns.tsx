@@ -9,7 +9,6 @@ type PlayerColumnProps = {
   snapshot: WiaiSnapshot;
   currentSessionPlayer: SessionPlayerSnapshot | undefined;
   focusedPlayerId: string;
-  selectedPlayerId?: string | undefined;
   onFocusPlayer: (playerId: string) => void;
   testId?: string;
 };
@@ -19,7 +18,6 @@ export function PlayerColumn({
   snapshot,
   currentSessionPlayer,
   focusedPlayerId,
-  selectedPlayerId,
   onFocusPlayer,
   testId
 }: PlayerColumnProps) {
@@ -34,7 +32,6 @@ export function PlayerColumn({
           key={player.id}
           onFocus={onFocusPlayer}
           player={player}
-          selectedPlayerId={selectedPlayerId}
           snapshot={snapshot}
         />
       ))}
@@ -43,7 +40,7 @@ export function PlayerColumn({
         <div className="grid gap-1.5">
           <LegendItem className="bg-emerald-400" label={tCommand("legend.done")} />
           <LegendItem className="bg-warning" label={tCommand("legend.waiting")} />
-          <LegendItem className="bg-destructive" label={tCommand("legend.suspicious")} />
+          <LegendItem className="bg-destructive" label={tCommand("legend.topVoted")} />
           <LegendItem className="bg-muted-foreground" label={tCommand("legend.inactive")} />
         </div>
       </div>
@@ -56,7 +53,6 @@ export function PlayerRail({
   snapshot,
   currentSessionPlayer,
   focusedPlayerId,
-  selectedPlayerId,
   onFocusPlayer,
   testId
 }: PlayerColumnProps) {
@@ -70,7 +66,6 @@ export function PlayerRail({
               isFocused={player.id === focusedPlayerId}
               onFocus={onFocusPlayer}
               player={player}
-              selectedPlayerId={selectedPlayerId}
               snapshot={snapshot}
             />
           </div>

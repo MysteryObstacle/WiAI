@@ -13,53 +13,28 @@ export function useVoteGraphMotion(versionKey: string) {
     }
 
     const context = gsap.context(() => {
-      const nodes = target.querySelectorAll(".vote-graph-node");
       const edges = target.querySelectorAll(".vote-graph-edge");
-      const selected = target.querySelectorAll(".vote-graph-selected");
 
-      gsap.fromTo(
-        nodes,
-        { autoAlpha: 0, scale: 0.96 },
-        {
-          autoAlpha: 1,
-          scale: 1,
-          duration: 0.2,
-          stagger: 0.025,
-          ease: "power2.out",
-          overwrite: "auto",
-          clearProps: "opacity,visibility,transform"
-        }
-      );
+      edges.forEach((edge) => {
+        const line = edge as SVGLineElement;
+        const length = Math.hypot(
+          Number(line.getAttribute("x2")) - Number(line.getAttribute("x1")),
+          Number(line.getAttribute("y2")) - Number(line.getAttribute("y1"))
+        );
 
-      if (edges.length > 0) {
         gsap.fromTo(
-          edges,
-          { autoAlpha: 0 },
+          line,
+          { autoAlpha: 0, strokeDasharray: length, strokeDashoffset: length },
           {
             autoAlpha: 1,
-            duration: 0.18,
+            strokeDashoffset: 0,
+            duration: 0.24,
             ease: "power1.out",
             overwrite: "auto",
-            clearProps: "opacity,visibility"
+            clearProps: "opacity,visibility,strokeDasharray,strokeDashoffset"
           }
         );
-      }
-
-      if (selected.length > 0) {
-        gsap.fromTo(
-          selected,
-          { scale: 1 },
-          {
-            scale: 1.06,
-            duration: 0.12,
-            yoyo: true,
-            repeat: 1,
-            ease: "power1.out",
-            overwrite: "auto",
-            clearProps: "transform"
-          }
-        );
-      }
+      });
     }, target);
 
     return () => context.revert();

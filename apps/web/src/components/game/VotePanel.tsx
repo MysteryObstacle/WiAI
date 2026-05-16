@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { Room } from "colyseus.js";
-import { Check, Vote } from "lucide-react";
+import { Vote } from "lucide-react";
 import { useMemo } from "react";
 import { useVoteGraphMotion } from "@/animations/useVoteGraphMotion";
 import { sendBallot } from "@/game-client/roomCommands";
@@ -13,7 +13,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { cn } from "@/lib/utils";
 import {
   getOwnBallot,
-  getPublicPlayerName,
   getVoteGraphEdges,
   getVoteGraphNodes
 } from "./gameViewModel";
@@ -52,6 +51,9 @@ export function VotePanel({
   const edges = useMemo(() => getVoteGraphEdges(snapshot), [snapshot]);
   const currentNode = nodes.find((node) => node.playerId === currentSessionPlayer?.id);
   const selectedNode = nodes.find((node) => node.playerId === effectiveTargetId);
+  const polygonPoints = nodes.map((node) => `${node.x},${node.y}`).join(" ");
+  const closedPolygonPoints =
+    nodes.length > 0 ? `${polygonPoints} ${nodes[0]?.x},${nodes[0]?.y}` : "";
   const graphRef = useVoteGraphMotion(
     `${snapshot.phaseVersion}:${edges.length}:${effectiveTargetId ?? "none"}`
   );
@@ -78,76 +80,78 @@ export function VotePanel({
           >
             <defs>
               <marker
-                id="vote-arrow"
-                markerHeight="5"
-                markerWidth="5"
+                id="vote-arrow-primary"
+                markerHeight="8"
+                markerUnits="strokeWidth"
+                markerWidth="8"
                 orient="auto"
-                refX="4"
-                refY="2.5"
+                refX="7"
+                refY="4"
               >
-                <path d="M0,0 L5,2.5 L0,5 Z" fill="currentColor" />
+                <path d="M0,0 L8,4 L0,8 Z" fill="#f5f5f5" />
+              </marker>
+              <marker
+                id="vote-arrow-destructive"
+                markerHeight="8"
+                markerUnits="strokeWidth"
+                markerWidth="8"
+                orient="auto"
+                refX="7"
+                refY="4"
+              >
+                <path d="M0,0 L8,4 L0,8 Z" fill="#ef4444" />
               </marker>
             </defs>
-            <line x1="42" y1="42" x2="58" y2="58" className="text-border" stroke="currentColor" strokeWidth="0.7" />
-            <line x1="58" y1="42" x2="42" y2="58" className="text-border" stroke="currentColor" strokeWidth="0.7" />
+            {nodes.length > 1 ? (
+              <polyline
+                className="text-border"
+                fill="none"
+                points={closedPolygonPoints}
+                stroke="currentColor"
+                strokeWidth="0.8"
+                vectorEffect="non-scaling-stroke"
+              />
+            ) : null}
             {edges.map((edge) => {
               const actor = nodes.find((node) => node.playerId === edge.actorSessionPlayerId);
               const target = nodes.find((node) => node.playerId === edge.targetSessionPlayerId);
               if (!actor || !target) return null;
+              const line = trimVoteLine(actor, target);
 
               return (
                 <line
                   className="vote-graph-edge text-primary"
                   key={edge.id}
-                  markerEnd="url(#vote-arrow)"
+                  markerEnd="url(#vote-arrow-primary)"
                   stroke="currentColor"
                   strokeLinecap="round"
                   strokeWidth="0.9"
-                  x1={actor.x}
-                  x2={target.x}
-                  y1={actor.y}
-                  y2={target.y}
+                  vectorEffect="non-scaling-stroke"
+                  x1={line.x1}
+                  x2={line.x2}
+                  y1={line.y1}
+                  y2={line.y2}
                 />
               );
             })}
-            {previewEdge ? (
-              <line
-                className="vote-graph-edge text-destructive"
-                markerEnd="url(#vote-arrow)"
-                stroke="currentColor"
-                strokeDasharray="2 2"
-                strokeLinecap="round"
-                strokeWidth="0.8"
-                x1={previewEdge.x1}
-                x2={previewEdge.x2}
-                y1={previewEdge.y1}
-                y2={previewEdge.y2}
-              />
-            ) : null}
+            {previewEdge ? <PreviewVoteLine edge={previewEdge} /> : null}
           </svg>
-
-          <div className="absolute left-1/2 top-1/2 grid size-24 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border bg-background/80 font-mono text-xs text-muted-foreground">
-            VOTE
-          </div>
 
           {nodes.map((node) => {
             const player = snapshot.sessionPlayers.find((item) => item.id === node.playerId);
             if (!player) return null;
             const isSelf = player.id === currentSessionPlayer?.id;
             const isDisabled = Boolean(ownBallot) || isSelf || !player.isActive;
-            const label = getPublicPlayerName(
-              player,
-              tGame("player.label", { gameNumber: player.gameNumber })
-            );
+            const label = tGame("player.label", { gameNumber: player.gameNumber });
 
             return (
               <button
                 data-testid={`vote-option-${player.gameNumber}`}
                 className={cn(
-                  "vote-graph-node absolute grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border bg-card text-center transition-all hover:-translate-y-[calc(50%+2px)] hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-55",
+                  "absolute -translate-x-1/2 -translate-y-1/2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-55",
                   node.isCurrent && "ring-1 ring-primary/45",
                   node.isSelected &&
-                    "vote-graph-selected border-destructive bg-destructive/10 text-destructive ring-2 ring-destructive/20"
+                    "ring-2 ring-destructive/25"
                 )}
                 disabled={isDisabled}
                 key={node.playerId}
@@ -158,11 +162,16 @@ export function VotePanel({
                   onFocusPlayer(player.id);
                 }}
               >
-                <span className="font-mono text-lg font-semibold">{player.gameNumber}</span>
-                <span className="max-w-14 truncate text-[10px] text-muted-foreground">{label}</span>
-                {node.hasVoted ? (
-                  <Check className="absolute -right-0.5 -top-0.5 size-4 rounded-full bg-emerald-400 p-0.5 text-background" aria-hidden />
-                ) : null}
+                <span
+                  className={cn(
+                    "vote-graph-node grid size-14 place-items-center rounded-full border border-border bg-card text-center transition-colors hover:border-primary",
+                    node.isCurrent && "border-primary",
+                    node.isSelected && "vote-graph-selected border-destructive bg-destructive/10 text-destructive"
+                  )}
+                >
+                  <span className="sr-only">{label}</span>
+                  <span className="font-mono text-lg font-semibold">{player.gameNumber}</span>
+                </span>
                 {node.votesAgainst > 0 ? (
                   <span className="absolute -bottom-1 rounded-full border border-border bg-background px-1.5 py-0.5 text-[10px]">
                     {t("voteCount", { count: node.votesAgainst })}
@@ -178,11 +187,7 @@ export function VotePanel({
             <span className="text-muted-foreground">{t("currentSelection")}</span>
             {selectedPlayer ? (
               <Badge variant="outline">
-                {tGame("player.label", { gameNumber: selectedPlayer.gameNumber })}{" "}
-                {getPublicPlayerName(
-                  selectedPlayer,
-                  tGame("player.label", { gameNumber: selectedPlayer.gameNumber })
-                )}
+                {tGame("player.label", { gameNumber: selectedPlayer.gameNumber })}
               </Badge>
             ) : (
               <Badge variant="secondary">{focusedPlayer ? t("notSelected") : t("noTarget")}</Badge>
@@ -219,4 +224,50 @@ export function VotePanel({
       </CardContent>
     </Card>
   );
+}
+
+function PreviewVoteLine({ edge }: { edge: { x1: number; y1: number; x2: number; y2: number } }) {
+  const line = trimVoteLine(
+    { x: edge.x1, y: edge.y1 },
+    { x: edge.x2, y: edge.y2 }
+  );
+
+  return (
+    <line
+      className="vote-graph-edge text-destructive"
+      markerEnd="url(#vote-arrow-destructive)"
+      stroke="currentColor"
+      strokeDasharray="2 2"
+      strokeLinecap="round"
+      strokeWidth="0.8"
+      vectorEffect="non-scaling-stroke"
+      x1={line.x1}
+      x2={line.x2}
+      y1={line.y1}
+      y2={line.y2}
+    />
+  );
+}
+
+function trimVoteLine(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  trim = 6
+) {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const length = Math.hypot(dx, dy);
+  if (length === 0) {
+    return { x1: from.x, y1: from.y, x2: to.x, y2: to.y };
+  }
+
+  const ux = dx / length;
+  const uy = dy / length;
+
+  return {
+    x1: from.x + ux * trim,
+    y1: from.y + uy * trim,
+    x2: to.x - ux * trim,
+    y2: to.y - uy * trim
+  };
 }

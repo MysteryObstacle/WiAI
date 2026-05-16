@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { answersForRound, getPublicPlayerName } from "./gameViewModel";
+import { answersForRound } from "./gameViewModel";
 
 interface RevealPanelProps {
   snapshot: WiaiSnapshot;
@@ -37,14 +37,13 @@ export function AnswerList({
           const playerLabel = player
             ? tGame("player.label", { gameNumber: player.gameNumber })
             : tGame("player.unknown");
-          const publicName = player ? getPublicPlayerName(player, playerLabel) : playerLabel;
           const answerContent = (
             <>
               <span className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
                 <span>{tReveal("answerNumber", { number: index + 1 })}</span>
                 <span>{playerLabel}</span>
               </span>
-              <strong className="mt-2 block truncate text-sm">{publicName}</strong>
+              <strong className="mt-2 block truncate text-sm">{playerLabel}</strong>
               <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">
                 {answer.content || tAnswer("submitted")}
               </p>

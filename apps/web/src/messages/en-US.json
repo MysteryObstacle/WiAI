@@ -250,7 +250,6 @@
       "currentFocus": "Current focus",
       "mentioned": "Mentioned {count}",
       "votes": "{count} votes",
-      "heat": "Heat {count}/3",
       "quick": {
         "agree": "Agree",
         "challenge": "Challenge",
@@ -296,20 +295,22 @@
       "you": "You",
       "metrics": {
         "speech": "Speech {count}",
-        "mentions": "Mentioned {count}",
         "votes": "Votes {count}",
-        "heat": "Heat"
+        "answerSubmitted": "Answer submitted",
+        "answerMissing": "Answer pending",
+        "voteSubmitted": "Vote cast",
+        "voteMissing": "Vote pending"
       },
       "legend": {
         "title": "Status legend",
         "done": "Submitted / voted",
         "waiting": "Waiting",
-        "suspicious": "Selected / high suspicion",
+        "topVoted": "Most voted last round",
         "inactive": "Inactive / no state"
       },
       "status": {
-        "current": "You",
-        "selected": "Selected",
+        "current": "Current user",
+        "topVoted": "Most voted last round",
         "submitted": "Submitted",
         "waiting": "Waiting",
         "spoke": "Spoke",
@@ -319,13 +320,11 @@
     },
     "dossier": {
       "title": "Investigation dossier",
-      "description": "Review the focused player's public evidence.",
-      "focused": "Focused",
-      "player": "Player",
+      "description": "Review answers, speech, and vote records for this game.",
+      "stats": "Stats",
       "answer": "Answer",
       "discussion": "Discussion",
       "vote": "Vote",
-      "history": "History",
       "noPlayer": "No player selected",
       "noAnswer": "No public answer for this round",
       "noMessages": "No messages from this player this round",
@@ -336,8 +335,12 @@
       "currentAnswer": "Current answer",
       "answerProgress": "{count}/{total} answers public",
       "messageProgress": "{count} total messages this round",
-      "roundQuestion": "Round question",
-      "historySummary": "{answers} answers · {messages} messages · {votes} votes recorded"
+      "previousTopVoted": "Most voted last round",
+      "answerChars": "Answer {count} chars",
+      "votedFor": "Voted {target}",
+      "notVoted": "Vote pending",
+      "receivedVotes": "Votes received from",
+      "none": "None"
     }
   },
   "status": {

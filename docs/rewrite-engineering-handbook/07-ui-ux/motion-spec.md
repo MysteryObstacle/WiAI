@@ -68,7 +68,7 @@ new message arrives or focused player changes
 Behavior:
 
 - fade new relevant messages in with a subtle upward motion
-- briefly emphasize the mentioned/focused player card
+- briefly emphasize the focused player card
 - avoid persistent pulsing while players are reading
 
 ## Vote Feedback
@@ -81,8 +81,8 @@ current player submits a ballot
 
 Behavior:
 
-- briefly emphasize the selected vote node using scale or opacity only
-- after confirmation, animate a lightweight arrow from the current user's node to the selected target when public vote mode is enabled
+- draw the selected or confirmed vote arrow with opacity/stroke progress only
+- avoid GSAP scale transforms on absolutely positioned vote nodes, because those nodes rely on CSS translate positioning
 - bounce the affected vote count once
 - update vote state with static readable content after the confirmation
 - do not use persistent trails, large glows, or complex custom line animations

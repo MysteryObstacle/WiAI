@@ -34,9 +34,9 @@ Start button explains disabled reason.
 Required regions:
 
 - top status bar with product identity, room code, round, phase, countdown, current player number, and known identity
-- left player status panel with all active players, phase status, speech counts, suspicion/vote counts, and selected/focus state
+- left player status panel with all active players, public player numbers, phase status, speech counts, current vote counts, answer status, vote status, and previous-round top-voted marker
 - central stage main canvas for the active phase's primary task
-- right persistent investigation panel for player dossier, answer history, discussion evidence, vote context, and history
+- right persistent investigation panel for player statistics, answer records, discussion evidence, and vote context
 - revealed answers, discussion messages, and vote state surfaced through the active command console or dossier, not as always-on competing panels
 
 The three main columns share the page's remaining height. Each column scrolls internally instead of pushing the page taller.
@@ -53,9 +53,9 @@ Preferred phase behavior:
 - Answer prep: `AnswerPrepCard` shows the question, answer guidance chips, answer-paper textarea, character count, submit/modify state, and submitted count. Left panel emphasizes submitted/waiting status. Right panel shows round task guidance if no evidence exists yet.
 - Answer reveal: `AnswerRevealCard` shows an answer card wall plus selected answer detail and suspicion tags. Right panel follows the selected answer's player and highlights answer evidence.
 - Discussion: `DiscussionCard` organizes messages around the current focus player, focus summary, and quick replies. It should not become a generic full-screen chat.
-- Voting: `VotingDecisionCard` uses a planar voting relationship graph with player nodes and arrows. It must not repeat candidate cards from the left panel.
+- Voting: `VotingDecisionCard` uses a planar voting relationship graph with player-number nodes connected as a regular N-sided polygon and arrows from voter to target. It must not repeat candidate cards from the left panel, draw a central VOTE/X table, or use checkmarks instead of vote arrows.
 
-Do not expose AI identity in player cards during normal play. Debug-only identity labels must stay out of the production game surface.
+Do not expose AI identity or nicknames in player cards during normal play. Debug-only identity labels must stay out of the production game surface; in-game users are identified by public number.
 
 Desktop sizing:
 

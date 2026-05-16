@@ -5,7 +5,6 @@ import { Crown } from "lucide-react";
 import { useSettlementReveal } from "@/animations/useSettlementReveal";
 import type { WiaiSnapshot } from "@/game-client/types";
 import { Card, CardContent } from "@/components/ui/card";
-import { getPublicPlayerName } from "./gameViewModel";
 
 interface SettlementPanelProps {
   snapshot: WiaiSnapshot;
@@ -32,7 +31,7 @@ export function SettlementPanel({ snapshot }: SettlementPanelProps) {
           <p className="text-muted-foreground">
             {t("frozenPlayer")}:{" "}
             <strong className="text-foreground">
-              {frozen ? getFrozenPlayerLabel() : t("unknown")}
+              {frozen ? tGame("player.label", { gameNumber: frozen.gameNumber }) : t("unknown")}
             </strong>
           </p>
         </div>
@@ -45,12 +44,6 @@ export function SettlementPanel({ snapshot }: SettlementPanelProps) {
                 <span className="text-xs text-muted-foreground">
                   {tGame("player.label", { gameNumber: player.gameNumber })}
                 </span>
-                <strong className="mt-1 block">
-                  {getPublicPlayerName(
-                    player,
-                    tGame("player.label", { gameNumber: player.gameNumber })
-                  )}
-                </strong>
                 <p className="mt-1 text-primary">{player.role ? tRole(player.role) : tRole("hidden")}</p>
               </article>
             ))}
@@ -84,11 +77,4 @@ export function SettlementPanel({ snapshot }: SettlementPanelProps) {
       </CardContent>
     </Card>
   );
-
-  function getFrozenPlayerLabel() {
-    if (!frozen) return t("unknown");
-    const playerLabel = tGame("player.label", { gameNumber: frozen.gameNumber });
-    const publicName = getPublicPlayerName(frozen, playerLabel);
-    return publicName === playerLabel ? playerLabel : `${playerLabel} / ${publicName}`;
-  }
 }

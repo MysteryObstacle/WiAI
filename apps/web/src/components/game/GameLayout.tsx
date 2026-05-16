@@ -96,7 +96,6 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
           focusedPlayerId={focusedPlayerId}
           onFocusPlayer={focusPlayer}
           players={compactPlayers}
-          selectedPlayerId={selectedVoteTargetId}
           snapshot={snapshot}
           testId="player-compact-rail"
         />
@@ -113,7 +112,6 @@ export function GameLayout({ room, snapshot, currentSessionPlayer }: GameLayoutP
               focusedPlayerId={focusedPlayerId}
               onFocusPlayer={focusPlayer}
               players={compactPlayers}
-              selectedPlayerId={selectedVoteTargetId}
               snapshot={snapshot}
               testId="player-column-left"
             />
